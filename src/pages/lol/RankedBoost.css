@@ -1,0 +1,1060 @@
+/* RankedBoost.css */
+.ranked-boost-container {
+    min-height: calc(100vh - 70px);
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: #0a061d;
+    color: white;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  .hero-titles {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .hero-titles h1 {
+    font-size: 2em;
+    margin-bottom: 2px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  
+  .hero-titles h2 {
+    font-size: 1.4em;
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    margin: 0;
+    padding: 10px;
+    line-height: 1;
+  }
+  
+  .main-content {
+    display: flex;
+    gap: 40px;
+    padding: 10px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  
+  .content-left {
+    flex: 7;
+    min-width: 0;
+  }
+  
+  .content-right {
+    flex: 3;
+    min-width: 280px;
+    position: sticky;
+    top: 20px;
+    height: auto;
+  }
+  
+  /* Contenedor del selector de rango */
+  .rank-selector-container {
+    background: rgba(31, 41, 55, 0.5);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+  
+  .ranks-display {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .rank-display {
+    text-align: center;
+  }
+  
+  .rank-label {
+    color: #FFD700;
+    font-size: 1.2em;
+  }
+  
+  .rank-image {
+    width: 220px;
+    height: 220px;
+    margin: 10px 0;
+  }
+  
+  .rank-arrow {
+    font-size: 2em;
+    color: #FFD700;
+  }
+  
+  .rank-text {
+    font-size: 1.1em;
+    color: white;
+  }
+  
+  /* Slider */
+  .slider-wrapper {
+    padding: 20px 0;
+  }
+  
+  .slider {
+    position: relative;
+    width: 100%;
+    height: 10px;
+    cursor: pointer;
+  }
+  
+  .slider-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(90deg, 
+      #7a7a7a 0%,                  /* Hierro */
+      #7a7a7a 13%, #cd7f32 13%,    /* Bronce */
+      #cd7f32 26%, #C0C0C0 26%,    /* Plata */
+      #C0C0C0 39%, #FFAA00 39%,    /* Oro */
+      #FFAA00 52%, #89CFF0 52%,    /* Platino */
+      #89CFF0 65%, #50C878 65%,    /* Esmeralda */
+      #50C878 78%, #4053fd 78%,    /* Diamante */
+      #4053fd 91%, #ff00ff 91%,    /* Master */
+      #ff00ff 94%, #FF0000 94%,    /* Grandmaster */
+      #FF0000 97%, #fffb10 97%     /* Challenger */
+    );
+  }
+  
+  .slider-range {
+    position: absolute;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+  }
+  
+  .slider-thumb {
+    width: 25px;
+    height: 25px;
+    background: #FFD700;
+    border: 2px solid white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2E0854;
+    font-weight: bold;
+    font-size: 14px;
+    transition: transform 0.2s;
+    z-index: 2;
+  }
+  
+  .slider-thumb:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  
+  .slider-thumb:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  
+  /* Grid de opciones */
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .option-box {
+    position: relative; /* Añade esto */
+    background: rgba(31, 41, 55, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+
+  /* Estilos para los títulos y opciones */
+.option-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFD700;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    cursor: help;
+    font-size: 12px;
+    position: relative;
+    z-index: 9999; /* También aumentamos el z-index del ícono */
+  }
+  
+  .info-tooltip {
+    visibility: hidden;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 16px; /* Padding aumentado */
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: normal;
+    z-index: 10000; /* Aumentado por encima de 1001 que es el máximo del navbar */
+    min-width: 200px; /* Ancho mínimo */
+    max-width: 350px; /* Máximo ancho aumentado */
+    text-align: center;
+    line-height: 1.4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  .info-icon:hover .info-tooltip {
+    visibility: visible;
+  }
+
+  /* Flecha del tooltip (opcional) */
+  .info-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+  }
+
+  /* Si quieres ser más específico, usa un ID o una clase */
+  #server-info-tooltip, 
+  .server-info-tooltip {
+    bottom: auto;
+    top: 125%;
+  }
+
+  #server-info-tooltip::after,
+  .server-info-tooltip::after {
+    top: auto;
+    bottom: 100%;
+    border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
+  }
+  
+  .price-tag {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+  }
+  
+  .price-tag.free {
+    background: rgba(39, 174, 96, 0.2);
+    color: #2ecc71;
+    margin-bottom: 15px;
+  }
+  
+  .price-tag.extra {
+    background: rgba(255, 215, 0, 0.2);
+    color: #FFD700;
+  }
+  
+  /* Opciones y botones */
+  .range-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .range-option {
+    position: relative;
+  }
+  
+  .range-option input[type="radio"] {
+    display: none;
+  }
+  
+  .range-button {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #FFD700;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .range-button:hover,
+  .range-option input[type="radio"]:checked + .range-button {
+    background: #FFD700;
+    color: #2E0854;
+    font-weight: bold;
+  }
+  
+  /* Resumen del pedido */
+  .order-summary {
+    background: rgba(31, 41, 55, 0.5);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+  
+  .summary-header {
+    color: #FFD700;
+    font-size: 1.3em;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .nick-input-container {
+    margin-bottom: 20px;
+  }
+  
+  .nick-label {
+    display: block;
+    color: #FFD700;
+    margin-bottom: 8px;
+  }
+  
+  .lol-nick-input {
+    width: 95%;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+  }
+  
+  .summary-content {
+    margin-bottom: 20px;
+  }
+  
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  }
+  
+  .price-display {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .price-amount {
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .currency-toggle {
+    text-align: center;
+  }
+  
+  .currency-button {
+    background: transparent;
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .currency-button:hover {
+    background: #FFD700;
+    color: #2E0854;
+  }
+  
+  .pay-button {
+    width: 100%;
+    padding: 12px;
+    background: #FFD700;
+    color: #2E0854;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .pay-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+  }
+  
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .options-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    .main-content {
+      flex-direction: column;
+    }
+  
+    .content-right {
+      position: static;
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .options-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .hero-titles h1 {
+      font-size: 1.5em;
+    }
+  
+    .hero-titles h2 {
+      font-size: 1.2em;
+    }
+  
+    .rank-image {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .top-selectors {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .rank-selector-container {
+    flex: 1.96;
+    background: rgba(31, 41, 55, 0.5);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+  }
+  
+  .basic-options-container {
+    flex: 1;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .option-section {
+    margin-bottom: 10px;
+  }
+  
+  .option-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .server-buttons,
+  .queue-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .server-buttons button,
+  .queue-buttons button {
+    width: 100%;
+  }
+  
+  @media (max-width: 1024px) {
+    .top-selectors {
+      flex-direction: column;
+    }
+    
+    .basic-options-container {
+      flex-direction: row;
+      gap: 20px;
+    }
+    
+    .option-section {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+  .server-options {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .server-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 70px;
+  }
+  
+  .server-button:hover {
+    background: rgba(255, 215, 0, 0.2);
+  }
+  
+  .server-button.active {
+    background: #FFD700;
+  }
+  
+  .server-button.active .server-name {
+    color: #2E0854;
+  }
+  
+  .server-image {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+  
+  .server-name {
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .basic-options-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;  /* Espacio entre los dos cuadrados */
+  }
+  
+  .option-section {
+    background: rgba(31, 41, 55, 0.5);
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+
+  }
+
+  /* Color blanco cuando no está seleccionado */
+.server-button img {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+/* Color azul oscuro cuando está seleccionado */
+.server-button.active img {
+  filter: brightness(0) saturate(100%) invert(8%) sepia(19%) saturate(1674%) hue-rotate(197deg) brightness(97%) contrast(96%);
+}
+
+.switch-container {
+  display: flex;
+  justify-content: center;
+
+}
+
+.switch-group {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 30px;
+  padding: 4px;
+  position: relative;
+  border: 2px solid #FFD700;
+}
+
+.switch-option {
+  position: relative;
+  z-index: 1;
+  padding: 8px 20px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  min-width: 80px;
+}
+
+.switch-option.active {
+  color: #2E0854;
+}
+
+.switch-option.inactive {
+  color: white;
+}
+
+.switch-slider {
+  position: absolute;
+
+  left: -0px; /* Reducido de 4px a 2px */
+  height: calc(100% - 0px); /* Cambiado de 8px a 4px */
+  width: calc(50% - 0px); /* Cambiado de 4px a 2px */
+  background-color: #FFD700;
+  border-radius: 25px;
+  transition: transform 0.3s ease;
+}
+
+.switch-slider.right {
+  transform: translateX(100%);
+}
+
+/* Ajustes para el texto del precio en Offline Mode */
+.switch-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.champion-search {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  z-index: 6;
+}
+
+.champion-search-input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid #FFD700;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.champion-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(31, 41, 55, 0.95);
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  margin-top: 5px;
+  z-index: 5;
+}
+
+.champion-dropdown.active {
+  display: block;
+}
+
+.champion-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.champion-option:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.selected-champions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+  min-height: 50px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.selected-champion {
+  position: relative;
+  display: inline-block;
+}
+
+.selected-champion img {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid #FFD700;
+}
+
+.remove-champion {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: #ff4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.search-input-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.champion-search-input {
+  width: 100%;
+  padding: 10px 35px 10px 15px; /* Añadir padding derecho para la flecha */
+  border: 2px solid #FFD700;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.dropdown-arrow2 {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #FFD700;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 2;
+  transition: transform 0.3s;
+}
+
+.dropdown-arrow2.active {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.champion-dropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(31, 41, 55, 0.95);
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  z-index: 1000;
+  display: none;
+}
+
+.champion-dropdown.active {
+  display: block;
+}
+
+/* Estilos para el dropdown de campeones */
+.champion-search {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.champion-search-input {
+  width: 100%;
+  padding: 10px 15px;
+  padding-right: 35px;
+  border: 2px solid #FFD700;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  cursor: pointer;
+}
+
+.champion-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(31, 41, 55, 0.95);
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  margin-top: 5px;
+  z-index: 1000;
+}
+
+.champion-dropdown.active {
+  display: block;
+}
+
+.champion-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.champion-option:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.champion-option img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.selected-champions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.selected-champion {
+  position: relative;
+  display: inline-block;
+}
+
+.selected-champion img {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  border: 2px solid #FFD700;
+}
+
+.remove-champion {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: #ff4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.champion-selector {
+  position: relative;
+}
+
+.disabled-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2em;
+  font-weight: bold;
+  border-radius: 10px; /* Mismo radio que el option-box */
+  z-index: 10; /* Asegura que esté por encima del contenido */
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Ajusta la opacidad si es necesario */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Añadir al final de RankedBoost.css */
+
+.boost-options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.boost-option-box {
+  background: rgba(31, 41, 55, 0.5);
+  padding: 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+/* Asegurarse que cada opción de boost tenga el mismo estilo que las demás opciones */
+.boost-option-box .switch-title-row,
+.boost-option-box .switch-container,
+.boost-option-box .switch-group {
+  margin: 0;
+}
+
+/* Ajustar el espaciado vertical cuando las opciones están en columna */
+.boost-options-container .boost-option-box:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+/* Añadir al RankedBoost.css */
+.swal-custom-popup {
+  border: 1px solid rgba(255, 215, 0, 0.1) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.swal-custom-title {
+  color: #FFD700 !important;
+}
+
+.swal-custom-content {
+  color: white !important;
+}
+
+.swal-custom-confirm:focus {
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.5) !important;
+}
+
+/* Añadir al RankedBoost.css */
+.price-display {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centrar todo el contenedor */
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  gap: 10px; /* Espacio entre el precio y el selector de moneda */
+}
+
+.price-amount-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.price-amount {
+  font-size: 2em;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.currency-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.currency-toggle-button {
+  background: transparent;
+  border: 2px solid #FFD700;
+  color: #FFD700;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.currency-toggle-button:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.currency-toggle-button .arrow {
+  transition: transform 0.3s ease;
+}
+
+.currency-toggle-button .arrow.active {
+  transform: rotate(180deg);
+}
+
+.currency-options {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 5px;
+  background: rgba(31, 41, 55, 0.95);
+  border: 2px solid #FFD700;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 1000;
+  display: none;
+}
+
+.currency-options.active {
+  display: block;
+}
+
+.currency-option {
+  padding: 8px 16px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.currency-option:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.currency-option.selected {
+  background: #FFD700;
+  color: #2E0854;
+}
+
+.pool-champ-text {
+  text-align: center;
+  color: #FFD700;
+  font-size: 1em;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+.rank-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.rank-arrow svg {
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.rank-arrow svg:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+}

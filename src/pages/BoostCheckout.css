@@ -1,0 +1,245 @@
+.boost-checkout-container {
+  min-height: calc(100vh - 70px);
+  padding: 20px;
+  background-color: #0a061d;
+  color: white;
+}
+
+.checkout-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.order-summary-checkout {
+  background: rgba(31, 41, 55, 0.5);
+  padding: 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.summary-details {
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.champions-row {
+  flex-direction: column;
+}
+
+.champions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.champion-item {
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.9em;
+}
+
+.price-summary {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.price-row:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.payment-section {
+  background: rgba(31, 41, 55, 0.5);
+  padding: 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.payment-method {
+  padding: 20px;
+  border: 2px solid #FFD700;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.payment-method:hover {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.payment-method.selected {
+  background: rgba(255, 215, 0, 0.3);
+  border-color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.payment-method-name {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.payment-method-info {
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.currency-selector {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
+  width: 100%;
+}
+
+.currency-selector label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.currency-selector label:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.currency-selector input[type="radio"] {
+  accent-color: #FFD700;
+  width: 16px;
+  height: 16px;
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.price {
+  color: #FFD700;
+  font-weight: bold;
+}
+
+h1, h2 {
+  color: #FFD700;
+  margin-bottom: 20px;
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 15px;
+  background: #FFD700;
+  color: #2E0854;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkout-btn:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+}
+
+.checkout-btn.disabled {
+  background: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* AnimaciĂłn para el botĂłn de pago seleccionado */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+.payment-method.selected {
+  animation: pulse 1.5s infinite;
+}
+
+/* Estilos responsive */
+@media (max-width: 600px) {
+  .checkout-content {
+    padding: 10px;
+  }
+  
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .summary-row > span:last-child {
+    font-weight: bold;
+    color: #FFD700;
+  }
+  
+  .total-price {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .price {
+    font-size: 1.2em;
+  }
+}

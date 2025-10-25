@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-eloboost-dev-ca1df-authRole",
+      "UnauthRoleArn": "arn:aws:iam::202344384469:role/amplify-eloboost-dev-ca1df-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::202344384469:role/amplify-eloboost-dev-ca1df-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+      "UnauthRoleName": "amplify-eloboost-dev-ca1df-unauthRole",
+      "StackName": "amplify-eloboost-dev-ca1df",
+      "StackId": "arn:aws:cloudformation:us-east-1:202344384469:stack/amplify-eloboost-dev-ca1df/e3105b30-b12d-11f0-ad08-0ee3c96f4a4d",
+      "AmplifyAppId": "d1wnna5501hrtx"
+    },
+    "categories": {
+      "auth": {
+        "eloboostde5c54ef": {}
+      }
+    }
+  }
+}

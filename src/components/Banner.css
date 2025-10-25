@@ -1,0 +1,34 @@
+.banner {
+    background-color: #0a061d;
+    padding: 100px 20px;
+    text-align: center;
+    color: white;
+  }
+  
+  .banner h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .banner .highlight {
+    color: #8b5cf6;
+  }
+  
+  .banner p {
+    font-size: 18px;
+    color: #9ca3af;
+    margin: 0;
+  }
+  
+  @media (max-width: 768px) {
+    .banner h1 {
+      font-size: 32px;
+    }
+  
+    .banner p {
+      font-size: 16px;
+    }
+  }
+  
+  
