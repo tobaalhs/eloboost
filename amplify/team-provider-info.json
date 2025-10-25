@@ -9,11 +9,28 @@
       "UnauthRoleName": "amplify-eloboost-dev-ca1df-unauthRole",
       "StackName": "amplify-eloboost-dev-ca1df",
       "StackId": "arn:aws:cloudformation:us-east-1:202344384469:stack/amplify-eloboost-dev-ca1df/e3105b30-b12d-11f0-ad08-0ee3c96f4a4d",
-      "AmplifyAppId": "d1wnna5501hrtx"
+      "AmplifyAppId": "d1wnna5501hrtx",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-eloboost-dev-ca1df-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "eloboostde5c54ef": {}
+      },
+      "function": {
+        "createPaymentLink": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/createPaymentLink-32636d792b6a786c7170-build.zip"
+        },
+        "verifyPayment": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/verifyPayment-66523275694332727959-build.zip"
+        }
+      },
+      "api": {
+        "eloboostApi": {}
+      },
+      "storage": {
+        "orders": {}
       }
     }
   }

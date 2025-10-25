@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "paths": {
+    "/create-payment-link": {
+      "name": "/create-payment-link",
+      "lambdaFunction": "createPaymentLink",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create"
+        ]
+      }
+    },
+    "/verify-payment": {
+      "name": "/verify-payment",
+      "lambdaFunction": "verifyPayment",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

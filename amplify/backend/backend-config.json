@@ -1,4 +1,28 @@
 {
+  "api": {
+    "eloboostApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "createPaymentLink"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "verifyPayment"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
   "auth": {
     "eloboostde5c54ef": {
       "customAuth": false,
@@ -25,6 +49,69 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "createPaymentLink": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "verifyPayment": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_createPaymentLink_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPaymentLink"
+        }
+      ]
+    },
+    "AMPLIFY_function_createPaymentLink_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPaymentLink"
+        }
+      ]
+    },
+    "AMPLIFY_function_verifyPayment_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "verifyPayment"
+        }
+      ]
+    },
+    "AMPLIFY_function_verifyPayment_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "verifyPayment"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "orders": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }

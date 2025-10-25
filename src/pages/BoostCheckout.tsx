@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useTranslation } from 'react-i18next';
 import './BoostCheckout.css'; // Importamos los estilos
+import { post } from 'aws-amplify/api';
 import { fetchUserAttributes } from 'aws-amplify/auth';
 
 // Definimos una interfaz para los datos del boost para que TypeScript sepa qué esperar
@@ -25,6 +26,11 @@ interface BoostData {
   priceCLP: string;
   priceUSD: string;
   displayCurrency: 'USD' | 'CLP';
+}
+
+interface ApiResponse {
+  paymentUrl?: string; // La '?' significa que esta propiedad es opcional
+  error?: string;      // Esta también es opcional
 }
 
 const BoostCheckout: React.FC = () => {
@@ -57,33 +63,54 @@ const BoostCheckout: React.FC = () => {
     }
   }, [user, navigate]);
 
-  const handleProceedToPayment = async () => { // <--- 1. Marcar como async
+  // ... (dentro de tu componente BoostCheckout)
+
+const handleProceedToPayment = async () => {
   if (!boostData) return;
 
   setIsProcessing(true);
   setError(null);
-
+  
   console.log("Iniciando proceso de pago...");
-  console.log("Datos del pedido:", boostData);
-
+  
   try {
-    // 2. Obtenemos los atributos del usuario de forma segura
     const userAttributes = await fetchUserAttributes();
     const userEmail = userAttributes.email;
 
-    console.log("Usuario:", userEmail); // <--- 3. Usamos el email obtenido
+    if (!userEmail) {
+      throw new Error("No se pudo obtener el email del usuario.");
+    }
 
-    // **PRÓXIMAMENTE:**
-    // 1. Llamar a AWS Lambda con 'boostData' y 'userEmail'.
-    // ...
+    const requestBody = {
+      amount: parseInt(boostData.priceCLP.replace(/\D/g, '')),
+      subject: `Eloboost de ${boostData.fromRank} a ${boostData.toRank}`,
+      email: userEmail
+    };
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setError("La conexión con el sistema de pagos aún no está implementada.");
+    console.log("Enviando al backend:", requestBody);
 
-  } catch (err) {
-    console.error("Error obteniendo atributos o procesando pago:", err);
-    setError("Ocurrió un error al intentar generar el link de pago.");
-  } finally {
+    const response = await post({
+      apiName: 'eloboostApi',
+      path: '/create-payment-link',
+      options: {
+        body: requestBody
+      }
+    }).response;
+
+    // --- CORRECCIÓN APLICADA AQUÍ ---
+    const data = await response.body.json() as ApiResponse;
+    
+    console.log('Respuesta del backend:', data);
+
+    if (data.paymentUrl) {
+      window.location.href = data.paymentUrl;
+    } else {
+      throw new Error(data.error || "La respuesta del backend no contenía una URL de pago.");
+    }
+
+  } catch (err: any) {
+    console.error("Error al llamar a la API o procesar el pago:", err);
+    setError(err.message || "Ocurrió un error al intentar generar el link de pago.");
     setIsProcessing(false);
   }
 };
