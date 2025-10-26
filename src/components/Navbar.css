@@ -364,3 +364,6 @@ body {
     padding: 0.5rem 1rem;
   }
 }
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}

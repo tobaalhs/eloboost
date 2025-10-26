@@ -6,7 +6,8 @@
     "login": "Entrar",
     "logout": "Sair",
     "profile": "Meu Perfil",
-    "boosterDashboard": "Painel do Booster"
+    "boosterDashboard": "Painel do Booster",
+    "myorders": "Meus pedidos"
   },
   "banner": {
     "title": "A Plataforma Gaming para",
@@ -223,5 +224,48 @@
       "needHelp": "Precisa de ajuda?",
       "contactSupport": "Contatar Suporte"
     }
+  },
+  "myorders": {
+    "title": "Meus Pedidos",
+    "errorLoading": "Não foi possível carregar seus pedidos. Por favor, tente novamente mais tarde.",
+    "noOrders": "Você ainda não fez nenhum pedido.",
+    "boostTitle": "Boost de {{from}} para {{to}}",
+    "server": "Servidor",
+    "queue": "Fila",
+    "amount": "Valor",
+    "date": "Data",
+    "viewDetails": "Ver Detalhes",
+    "status": {
+      "pending": "Pendente",
+      "paid": "Pago",
+      "completed": "Concluído"
+    }
+  },
+  "orderdetail": {
+    "title": "Detalhes do Pedido",
+    "orderId": "ID do Pedido: {{id}}",
+    "summary": "Resumo do Pedido",
+    "boost": "Boost",
+    "server": "Servidor",
+    "queue": "Fila",
+    "amount": "Valor",
+    "date": "Data",
+    "status": "Status",
+    "progress": "Progresso ao Vivo",
+    "progressSoon": "O acompanhamento do progresso estará disponível em breve!",
+    "options": "Opções Adicionais",
+    "duoBoost": "Boost em Duo",
+    "offlineMode": "Modo Offline",
+    "priority": "Boost Prioritário",
+    "champions": "Campeões Selecionados",
+    "cancelOrder": "Cancelar Pedido",
+    "errorLoading": "Não foi possível carregar os detalhes do pedido.",
+    "notFound": "Pedido não encontrado.",
+    "cancelConfirmTitle": "Você tem certeza?",
+    "cancelConfirmText": "Você não poderá reverter isso!",
+    "cancelConfirmButton": "Sim, cancele!",
+    "cancelledTitle": "Cancelado!",
+    "cancelledText": "Seu pedido pendente foi cancelado.",
+    "cancelError": "Houve um problema ao cancelar seu pedido."
   }
 }

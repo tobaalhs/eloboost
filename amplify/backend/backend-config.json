@@ -33,6 +33,22 @@
           ],
           "category": "function",
           "resourceName": "myOrdersFunction"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "cancelOrderFunction"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "getOrderDetail"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -68,7 +84,39 @@
     }
   },
   "function": {
+    "cancelOrderFunction": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "createPaymentLink": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "getOrderDetail": {
       "build": true,
       "dependsOn": [
         {
@@ -118,11 +166,28 @@
     },
     "verifyPayment": {
       "build": true,
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "parameters": {
+    "AMPLIFY_function_cancelOrderFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "cancelOrderFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_cancelOrderFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "cancelOrderFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_createPaymentLink_deploymentBucketName": {
       "usedBy": [
         {
@@ -136,6 +201,22 @@
         {
           "category": "function",
           "resourceName": "createPaymentLink"
+        }
+      ]
+    },
+    "AMPLIFY_function_getOrderDetail_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getOrderDetail"
+        }
+      ]
+    },
+    "AMPLIFY_function_getOrderDetail_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getOrderDetail"
         }
       ]
     },

@@ -34,6 +34,26 @@
           "read"
         ]
       }
+    },
+    "/cancel-order": {
+      "name": "/cancel-order",
+      "lambdaFunction": "cancelOrderFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create"
+        ]
+      }
+    },
+    "/order/{orderId}": {
+      "name": "/order/{orderId}",
+      "lambdaFunction": "getOrderDetail",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
     }
   }
 }

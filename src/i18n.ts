@@ -22,7 +22,7 @@ i18n
         translation: ptTranslations,
       },
     },
-    fallbackLng: 'en', // Idioma por defecto si el del navegador no está disponible
+    fallbackLng: 'es', // Idioma por defecto si el del navegador no está disponible
     interpolation: {
       escapeValue: false, // React ya se encarga de la seguridad (XSS)
     },

@@ -84,6 +84,7 @@ const handleProceedToPayment = async () => {
     const requestBody = {
       amount: parseInt(boostData.priceCLP.replace(/\D/g, '')),
       subject: `Eloboost de ${boostData.fromRank} a ${boostData.toRank}`,
+      ...boostData,
       email: userEmail
     };
 

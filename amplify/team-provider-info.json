@@ -19,11 +19,11 @@
       "function": {
         "createPaymentLink": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
-          "s3Key": "amplify-builds/createPaymentLink-38696c32776b666d4b65-build.zip"
+          "s3Key": "amplify-builds/createPaymentLink-4b4b494a724576355664-build.zip"
         },
         "verifyPayment": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
-          "s3Key": "amplify-builds/verifyPayment-66523275694332727959-build.zip"
+          "s3Key": "amplify-builds/verifyPayment-314c6e46474751695475-build.zip"
         },
         "paymentWebhook": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
@@ -31,7 +31,15 @@
         },
         "myOrdersFunction": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
-          "s3Key": "amplify-builds/myOrdersFunction-4670446f576737552f48-build.zip"
+          "s3Key": "amplify-builds/myOrdersFunction-56316f76675934486770-build.zip"
+        },
+        "getOrderDetail": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/getOrderDetail-2f766d62483557685978-build.zip"
+        },
+        "cancelOrderFunction": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/cancelOrderFunction-645a69696e7a77423445-build.zip"
         }
       },
       "api": {

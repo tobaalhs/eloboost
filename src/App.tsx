@@ -13,6 +13,7 @@ import BoostCheckout from './pages/BoostCheckout.tsx';
 import PaymentSuccess from './pages/PaymentSuccess.tsx';
 import PaymentFailure from './pages/PaymentFailure.tsx'; 
 import MyOrdersPage from './pages/MyOrdersPage.tsx'; 
+import OrderDetailPage from './pages/OrderDetailPage.tsx'; 
 
 // Ya no necesitamos PaymentResult.tsx
 // import PaymentResult from './pages/PaymentResult.tsx';
@@ -45,6 +46,15 @@ function App() {
               element={
                 <Authenticator>
                   <MyOrdersPage />
+                </Authenticator>
+              }
+            />
+            
+            <Route 
+              path="/order/:orderId" // La ruta dinámica
+              element={
+                <Authenticator>
+                  <OrderDetailPage />
                 </Authenticator>
               }
             />

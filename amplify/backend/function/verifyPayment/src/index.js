@@ -1,4 +1,7 @@
-// amplify/backend/function/verifyPayment/src/index.js (VERSIÓN FINAL)
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+Amplify Params - DO NOT EDIT */// amplify/backend/function/verifyPayment/src/index.js (VERSIÓN FINAL)
 
 const crypto = require('crypto');
 const axios = require('axios');

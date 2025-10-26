@@ -6,7 +6,8 @@
     "login": "Sign in",
     "logout": "Logout",
     "profile": "My Profile",
-    "boosterDashboard": "Booster Dashboard"
+    "boosterDashboard": "Booster Dashboard",
+    "myorders": "My orders"
   },
   "banner": {
     "title": "The Gaming Platform for",
@@ -223,5 +224,48 @@
       "needHelp": "Need help?",
       "contactSupport": "Contact Support"
     }
+  },
+  "myorders": {
+    "title": "My Orders",
+    "errorLoading": "Could not load your orders. Please try again later.",
+    "noOrders": "You have not placed any orders yet.",
+    "boostTitle": "Boost from {{from}} to {{to}}",
+    "server": "Server",
+    "queue": "Queue",
+    "amount": "Amount",
+    "date": "Date",
+    "viewDetails": "View Details",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "completed": "Completed"
+    }
+  },
+  "orderdetail": {
+    "title": "Order Details",
+    "orderId": "Order ID: {{id}}",
+    "summary": "Order Summary",
+    "boost": "Boost",
+    "server": "Server",
+    "queue": "Queue",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "progress": "Live Progress",
+    "progressSoon": "Progress tracker coming soon!",
+    "options": "Extra Options",
+    "duoBoost": "Duo Boost",
+    "offlineMode": "Offline Mode",
+    "priority": "Priority Boost",
+    "champions": "Champion Pool",
+    "cancelOrder": "Cancel Order",
+    "errorLoading": "Could not load order details.",
+    "notFound": "Order not found.",
+    "cancelConfirmTitle": "Are you sure?",
+    "cancelConfirmText": "You won't be able to revert this!",
+    "cancelConfirmButton": "Yes, cancel it!",
+    "cancelledTitle": "Cancelled!",
+    "cancelledText": "Your pending order has been cancelled.",
+    "cancelError": "There was a problem cancelling your order."
   }
 }
