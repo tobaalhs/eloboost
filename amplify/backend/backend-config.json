@@ -17,6 +17,22 @@
           ],
           "category": "function",
           "resourceName": "verifyPayment"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "paymentWebhook"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "myOrdersFunction"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -68,6 +84,38 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "myOrdersFunction": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "paymentWebhook": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "verifyPayment": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -88,6 +136,38 @@
         {
           "category": "function",
           "resourceName": "createPaymentLink"
+        }
+      ]
+    },
+    "AMPLIFY_function_myOrdersFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "myOrdersFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_myOrdersFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "myOrdersFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_paymentWebhook_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "paymentWebhook"
+        }
+      ]
+    },
+    "AMPLIFY_function_paymentWebhook_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "paymentWebhook"
         }
       ]
     },

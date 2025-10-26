@@ -5,6 +5,14 @@
     "fieldName": "orderId",
     "fieldType": "string"
   },
-  "gsi": [],
+  "gsi": [
+    {
+      "name": "byUserId",
+      "partitionKey": {
+        "fieldName": "userId",
+        "fieldType": "string"
+      }
+    }
+  ],
   "triggerFunctions": []
 }

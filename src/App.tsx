@@ -10,8 +10,9 @@ import RankedBoostPage from './pages/lol/RankedBoostPage.tsx';
 import Layout from './components/Layout.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import BoostCheckout from './pages/BoostCheckout.tsx';
-import PaymentSuccess from './pages/PaymentSuccess.tsx'; // Asegúrate de tener este
-import PaymentFailure from './pages/PaymentFailure.tsx'; // y este
+import PaymentSuccess from './pages/PaymentSuccess.tsx';
+import PaymentFailure from './pages/PaymentFailure.tsx'; 
+import MyOrdersPage from './pages/MyOrdersPage.tsx'; 
 
 // Ya no necesitamos PaymentResult.tsx
 // import PaymentResult from './pages/PaymentResult.tsx';
@@ -36,11 +37,17 @@ function App() {
               }
             />
 
-            {/* --- RUTAS CORREGIDAS Y AÑADIDAS --- */}
             <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/payment/failure" element={<PaymentFailure />} />
             
-            {/* La ruta /payment-result ya no es necesaria, la eliminamos */}
+            <Route 
+              path="/my-orders"
+              element={
+                <Authenticator>
+                  <MyOrdersPage />
+                </Authenticator>
+              }
+            />
 
           </Route>
         </Routes>

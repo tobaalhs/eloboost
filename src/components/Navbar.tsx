@@ -76,6 +76,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
            <button className="dropdown-button" onClick={() => handleNavLinkClick('/lol/ranked')}>
              {t('navbar.games')}
            </button>
+           <button className="dropdown-button" onClick={() => handleNavLinkClick('/my-orders')}>
+             {t('navbar.myOrders')}
+           </button>
          </div>
        </div>
 

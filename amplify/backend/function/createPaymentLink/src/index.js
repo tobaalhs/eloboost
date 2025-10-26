@@ -1,4 +1,10 @@
-// amplify/backend/function/createPaymentLink/src/index.js (VERSIÓN FINAL)
+/* Amplify Params - DO NOT EDIT
+	ENV
+	REGION
+	STORAGE_ORDERS_ARN
+	STORAGE_ORDERS_NAME
+	STORAGE_ORDERS_STREAMARN
+Amplify Params - DO NOT EDIT */// amplify/backend/function/createPaymentLink/src/index.js (VERSIÓN FINAL)
 
 const crypto = require('crypto');
 const axios = require('axios');

@@ -17,6 +17,23 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/webhook/payment-confirmation": {
+      "name": "/webhook/payment-confirmation",
+      "lambdaFunction": "paymentWebhook",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/my-orders": {
+      "name": "/my-orders",
+      "lambdaFunction": "myOrdersFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
     }
   }
 }

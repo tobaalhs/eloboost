@@ -19,11 +19,19 @@
       "function": {
         "createPaymentLink": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
-          "s3Key": "amplify-builds/createPaymentLink-32636d792b6a786c7170-build.zip"
+          "s3Key": "amplify-builds/createPaymentLink-38696c32776b666d4b65-build.zip"
         },
         "verifyPayment": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
           "s3Key": "amplify-builds/verifyPayment-66523275694332727959-build.zip"
+        },
+        "paymentWebhook": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/paymentWebhook-7a657975413032575356-build.zip"
+        },
+        "myOrdersFunction": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/myOrdersFunction-4670446f576737552f48-build.zip"
         }
       },
       "api": {
