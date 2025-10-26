@@ -20,7 +20,7 @@ const PaymentSuccess: React.FC = () => {
 
     const timer = setTimeout(() => {
       setShowConfetti(false)
-    }, 4000)
+    }, 7000)
 
     return () => clearTimeout(timer)
   }, [flowOrder])
@@ -29,11 +29,14 @@ const PaymentSuccess: React.FC = () => {
     const particles = []
     const colors = ["#FFD700", "#FFA500", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"]
 
-    for (let i = 0; i < 50; i++) {
+    // Puedes aumentar este número si quieres una lluvia aún más densa
+    for (let i = 0; i < 200; i++) {
       particles.push({
         id: i,
         left: Math.random() * 100,
-        animationDelay: Math.random() * 0.5,
+        // --- ¡ESTE ES EL CAMBIO CLAVE! ---
+        // Ahora las piezas empiezan a caer durante un lapso de 5 segundos.
+        animationDelay: Math.random() * 2.5, // Estaba en 0.5
         color: colors[Math.floor(Math.random() * colors.length)],
         size: Math.random() * 10 + 5,
         rotation: Math.random() * 360,
@@ -116,7 +119,7 @@ const PaymentSuccess: React.FC = () => {
         </div>
 
         <div className="action-buttons">
-          <button className="primary-button" onClick={() => navigate("/dashboard")}>
+          <button className="primary-button" onClick={() => navigate("/my-orders")}>
             {t("payment.success.viewService")}
           </button>
           <Link to="/" className="secondary-button">

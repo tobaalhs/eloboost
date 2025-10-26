@@ -36,7 +36,7 @@
 .confetti-piece {
   position: absolute;
   top: -10%;
-  animation: confetti-fall 4s ease-in forwards;
+  animation: confetti-fall 2s ease-in forwards;
   opacity: 1;
 }
 
@@ -184,6 +184,7 @@
   border-radius: 12px;
   padding: 25px 20px;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .info-card:hover {

@@ -1,39 +1,46 @@
 // src/pages/PaymentResult.tsx
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 
-// Suponiendo que ya tienes estos componentes creados
+import { useEffect, useState } from 'react';
+// Usamos useSearchParams para leer los parámetros de la URL de forma más fácil
+import { useSearchParams } from 'react-router-dom'; 
+
 import PaymentSuccess from './PaymentSuccess.tsx'; 
 import PaymentFailure from './PaymentFailure.tsx';
 
 const PaymentResult = () => {
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'failure'>('loading');
 
   useEffect(() => {
-    // Flow nos devuelve el resultado en un parámetro 'token' vía POST, 
-    // pero la redirección final a urlReturn es GET (sin cuerpo).
-    // En un sistema de producción, aquí haríamos una llamada a nuestro backend
-    // para verificar el estado real del token del pago.
+    // --- CAMBIO CLAVE: Verificación real en lugar de simulación ---
+    // Leemos el parámetro 'orderId' que nos envía la función verifyPayment.
+    const orderId = searchParams.get('orderId');
+    const error = searchParams.get('error');
 
-    // Por ahora, para esta prueba, vamos a simular que si llega aquí, es un éxito.
-    // El verdadero estado lo confirmará el webhook.
-    const timer = setTimeout(() => {
-        setStatus('success');
-    }, 1500); // Simulamos una pequeña carga
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (orderId) {
+      // Si existe un 'orderId', el pago fue un éxito.
+      setStatus('success');
+    } else if (error) {
+      // Si hay un parámetro 'error', el pago falló.
+      setStatus('failure');
+    } else {
+      // Si no hay ninguno, seguimos "cargando" o mostramos un error.
+      // Por seguridad, lo marcamos como fallo si no hay token/orderId.
+      setStatus('failure');
+    }
+  }, [searchParams]);
 
   if (status === 'loading') {
-    return <div>Verificando pago...</div>;
+    // Puedes mantener un estado de carga si lo deseas, aunque la verificación es rápida
+    return <div>Verificando estado del pago...</div>;
   }
 
   if (status === 'success') {
+    // Si el estado es 'success', renderizamos el componente de éxito como antes.
     return <PaymentSuccess />;
   } 
 
-  // En el futuro, si la verificación del token falla, mostraríamos esto.
+  // Si el estado es 'failure', renderizamos el componente de fallo.
   return <PaymentFailure />;
 };
 
