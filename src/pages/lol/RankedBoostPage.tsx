@@ -58,7 +58,7 @@ export const RankedBoostPage: React.FC = () => {
   const [offlineMode, setOfflineMode] = useState(false);
   const [duoBoost, setDuoBoost] = useState(false);
   const [priorityBoost, setPriorityBoost] = useState(false);
-  const [displayCurrency, setDisplayCurrency] = useState<'CLP' | 'USD'>('USD');
+  
   const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
   
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -118,6 +118,13 @@ export const RankedBoostPage: React.FC = () => {
     setCurrentThumb(thumb);
   };
 
+  const getDefaultCurrency = (): 'CLP' | 'USD' => {
+    const currentLanguage = i18n.language;
+    return currentLanguage === 'es' ? 'CLP' : 'USD';
+  };
+
+  const [displayCurrency, setDisplayCurrency] = useState<'CLP' | 'USD'>(getDefaultCurrency());
+
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging || !currentThumb) return;
     let value = getValueFromPosition(e.clientX);
@@ -134,6 +141,10 @@ export const RankedBoostPage: React.FC = () => {
   const showAlert = (title: string, text: string, icon: SweetAlertIcon) => Swal.fire({ title, text, icon, /* ... tus estilos de swal */ });
 
   const validateNickname = (nick: string): boolean => nick.includes('#');
+
+  useEffect(() => {
+    setDisplayCurrency(getDefaultCurrency());
+  }, [i18n.language]); //
 
   useEffect(() => {
     if (isDragging) {

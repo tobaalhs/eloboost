@@ -1,7 +1,7 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "eloboostde5c54ef_identitypool_de5c54ef",
+    "identityPoolName": "eloboostde5c54ef_identitypool_cc4db313",
     "allowUnauthenticatedIdentities": false,
     "resourceNameTruncated": "eloboode5c54ef",
     "userPoolName": "eloboostde5c54ef_userpool_de5c54ef",
@@ -36,7 +36,7 @@
     "sharedId": "de5c54ef",
     "resourceName": "eloboostde5c54ef",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "defaultSocial",
+    "useDefault": "manual",
     "hostedUI": true,
     "userPoolGroupList": [],
     "serviceName": "Cognito",
@@ -56,12 +56,21 @@
     },
     "breakCircularDependency": true,
     "dependsOn": [],
-    "hostedUIDomainName": "eloboost76ea324d-76ea324d",
+    "userPoolGroups": false,
+    "adminQueries": false,
+    "triggers": {},
+    "adminQueryGroup": "ADMIN",
+    "authProviders": [],
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": [],
+    "thirdPartyAuth": false,
+    "hostedUIDomainName": "eloboost234d6fe2-234d6fe2",
     "authProvidersUserPool": [
       "Google"
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/\"]}",
-    "authProviders": []
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000/\"],\"LogoutURLs\":[\"http://localhost:3000/\"]}"
   }
 }

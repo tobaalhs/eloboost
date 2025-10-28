@@ -652,6 +652,7 @@
 .switch-title-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -1087,3 +1088,4 @@
   transform: scale(1.1);
   filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
 }
+

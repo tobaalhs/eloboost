@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "auth": {
+      "eloboostde5c54ef": [
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

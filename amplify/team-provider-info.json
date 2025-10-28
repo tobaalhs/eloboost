@@ -40,10 +40,34 @@
         "cancelOrderFunction": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
           "s3Key": "amplify-builds/cancelOrderFunction-645a69696e7a77423445-build.zip"
+        },
+        "getLiveRank": {},
+        "AdminQueriesf016aa94": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/AdminQueriesf016aa94-487454354d4f5677414b-build.zip"
+        },
+        "getUserProfile": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/getUserProfile-6f334c572b7867423132-build.zip"
+        },
+        "updateUserRole": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/updateUserRole-714638666a662b4f7243-build.zip"
+        },
+        "listAllUsers": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/listAllUsers-4f42784a563356747046-build.zip"
+        },
+        "adminUsersFunction": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/adminUsersFunction-564b6a46534939556147-build.zip"
         }
       },
       "api": {
-        "eloboostApi": {}
+        "eloboostApi": {},
+        "AdminQueries": {},
+        "userManagementAPI": {},
+        "adminAPI": {}
       },
       "storage": {
         "orders": {}

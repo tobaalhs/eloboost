@@ -267,5 +267,30 @@
     "cancelledTitle": "Cancelled!",
     "cancelledText": "Your pending order has been cancelled.",
     "cancelError": "There was a problem cancelling your order."
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "role": "Rol",
+    "groups": "Grupos",
+    "noGroups": "Sin grupos asignados",
+    "manageUsers": "Gestionar Usuarios",
+    "errorLoading": "No se pudo cargar el perfil",
+    "retry": "Reintentar"
+  },
+  "completeProfile": {
+    "title": "Completa tu Perfil",
+    "subtitle": "Para continuar, necesitamos algunos datos adicionales",
+    "fullName": "Nickname",
+    "namePlaceholder": "Ej: JuanPérez777",
+    "nameRequired": "El nombre es obligatorio",
+    "phone": "Teléfono",
+    "phonePlaceholder": "+56912345678",
+    "phoneHint": "Incluye el código de país (ej: +56 para Chile)",
+    "phoneInvalid": "Ingresa un teléfono válido (ej: +56912345678)",
+    "updateError": "No se pudo actualizar el perfil",
+    "continue": "Continuar"
   }
 }

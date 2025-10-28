@@ -1,5 +1,41 @@
 {
   "api": {
+    "AdminQueries": {
+      "authorizationType": "AMAZON_COGNITO_USER_POOLS",
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        },
+        {
+          "attributes": [
+            "Arn",
+            "Name"
+          ],
+          "category": "function",
+          "resourceName": "AdminQueriesf016aa94"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "adminAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "adminUsersFunction"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "eloboostApi": {
       "dependsOn": [
         {
@@ -53,6 +89,36 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
+    },
+    "userManagementAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "getUserProfile"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "listAllUsers"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "updateUserRole"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -84,6 +150,34 @@
     }
   },
   "function": {
+    "AdminQueriesf016aa94": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "adminUsersFunction": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "cancelOrderFunction": {
       "build": true,
       "dependsOn": [
@@ -132,6 +226,34 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "getUserProfile": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "listAllUsers": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "myOrdersFunction": {
       "build": true,
       "dependsOn": [
@@ -164,6 +286,20 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "updateUserRole": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "verifyPayment": {
       "build": true,
       "dependsOn": [],
@@ -172,6 +308,38 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_AdminQueriesf016aa94_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "AdminQueriesf016aa94"
+        }
+      ]
+    },
+    "AMPLIFY_function_AdminQueriesf016aa94_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "AdminQueriesf016aa94"
+        }
+      ]
+    },
+    "AMPLIFY_function_adminUsersFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "adminUsersFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_adminUsersFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "adminUsersFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_cancelOrderFunction_deploymentBucketName": {
       "usedBy": [
         {
@@ -220,6 +388,38 @@
         }
       ]
     },
+    "AMPLIFY_function_getUserProfile_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getUserProfile"
+        }
+      ]
+    },
+    "AMPLIFY_function_getUserProfile_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getUserProfile"
+        }
+      ]
+    },
+    "AMPLIFY_function_listAllUsers_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "listAllUsers"
+        }
+      ]
+    },
+    "AMPLIFY_function_listAllUsers_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "listAllUsers"
+        }
+      ]
+    },
     "AMPLIFY_function_myOrdersFunction_deploymentBucketName": {
       "usedBy": [
         {
@@ -249,6 +449,22 @@
         {
           "category": "function",
           "resourceName": "paymentWebhook"
+        }
+      ]
+    },
+    "AMPLIFY_function_updateUserRole_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "updateUserRole"
+        }
+      ]
+    },
+    "AMPLIFY_function_updateUserRole_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "updateUserRole"
         }
       ]
     },

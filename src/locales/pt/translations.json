@@ -267,5 +267,30 @@
     "cancelledTitle": "Cancelado!",
     "cancelledText": "Seu pedido pendente foi cancelado.",
     "cancelError": "Houve um problema ao cancelar seu pedido."
+  },
+  "profile": {
+    "title": "Meu Perfil",
+    "name": "Nome",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "role": "Função",
+    "groups": "Grupos",
+    "noGroups": "Nenhum grupo atribuído",
+    "manageUsers": "Gerenciar Usuários",
+    "errorLoading": "Não foi possível carregar o perfil",
+    "retry": "Tentar novamente"
+  },
+  "completeProfile": {
+    "title": "Complete Seu Perfil",
+    "subtitle": "Para continuar, precisamos de algumas informações adicionais",
+    "fullName": "Nickname",
+    "namePlaceholder": "Ex: JoãoSilva777",
+    "nameRequired": "O nome é obrigatório",
+    "phone": "Telefone",
+    "phonePlaceholder": "+5511912345678",
+    "phoneHint": "Inclua o código do país (ex: +55 para Brasil)",
+    "phoneInvalid": "Digite um telefone válido (ex: +5511912345678)",
+    "updateError": "Não foi possível atualizar o perfil",
+    "continue": "Continuar"
   }
 }

@@ -267,5 +267,30 @@
     "cancelledTitle": "Cancelled!",
     "cancelledText": "Your pending order has been cancelled.",
     "cancelError": "There was a problem cancelling your order."
+  },
+  "profile": {
+    "title": "My Profile",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "role": "Role",
+    "groups": "Groups",
+    "noGroups": "No groups assigned",
+    "manageUsers": "Manage Users",
+    "errorLoading": "Could not load profile",
+    "retry": "Retry"
+  },
+  "completeProfile": {
+    "title": "Complete Your Profile",
+    "subtitle": "To continue, we need some additional information",
+    "fullName": "Nickname",
+    "namePlaceholder": "E.g., JohnSmith777",
+    "nameRequired": "Name is required",
+    "phone": "Phone",
+    "phonePlaceholder": "+56912345678",
+    "phoneHint": "Include country code (e.g., +56 for Chile)",
+    "phoneInvalid": "Enter a valid phone number (e.g., +56912345678)",
+    "updateError": "Could not update profile",
+    "continue": "Continue"
   }
 }

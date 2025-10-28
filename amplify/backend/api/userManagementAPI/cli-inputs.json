@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "paths": {
+    "/profile": {
+      "name": "/profile",
+      "lambdaFunction": "getUserProfile",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/admin/users": {
+      "name": "/admin/users",
+      "lambdaFunction": "listAllUsers",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/admin/update-role": {
+      "name": "/admin/update-role",
+      "lambdaFunction": "updateUserRole",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "update"
+        ]
+      }
+    }
+  }
+}
