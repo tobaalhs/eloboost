@@ -3,8 +3,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import { User, Globe, LogOut, UserCircle, Check, ChevronDown, Menu, X } from 'lucide-react';
-import { fetchUserAttributes } from 'aws-amplify/auth'; // NUEVO
+import { 
+  User, Globe, LogOut, UserCircle, Check, ChevronDown, Menu, X, Shield, Package 
+} from 'lucide-react';
+import { fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
 import "./Navbar.css";
 
 interface NavbarProps {
@@ -16,41 +18,60 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
-  // Estados para todos los menús desplegables
+  // Estados
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [isLolDropdownOpen, setIsLolDropdownOpen] = useState(false);
   const [isValorantDropdownOpen, setIsValorantDropdownOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // NUEVO: Estado para el nombre real del usuario
-  const [displayName, setDisplayName] = useState('Usuario');
 
-  // Referencias para cada menú
+  // Estados nuevos
+  const [displayName, setDisplayName] = useState('Usuario');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isBooster, setIsBooster] = useState(false);
+
+  // Refs
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const lolDropdownRef = useRef<HTMLDivElement>(null);
   const valorantDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
-  // NUEVO: Cargar nombre real del usuario
+  // Cargar nombre
   useEffect(() => {
     const loadUserName = async () => {
       if (user) {
         try {
           const attributes = await fetchUserAttributes();
-          // Prioridad: name > email > username
           const name = attributes.name || attributes.email || user.username || 'Usuario';
           setDisplayName(name);
-        } catch (err) {
-          console.error('Error loading user name:', err);
+        } catch {
           setDisplayName(user.username || 'Usuario');
         }
       }
     };
-    
     loadUserName();
+  }, [user]);
+
+  // Cargar roles
+  useEffect(() => {
+    const loadUserRoles = async () => {
+      if (user) {
+        try {
+          const session = await fetchAuthSession();
+          const groups = (session.tokens?.accessToken?.payload['cognito:groups'] as string[]) || [];
+          const groupsLower = groups.map(g => g.toLowerCase());
+          const admin = groupsLower.includes('admin');
+          const booster = groupsLower.includes('booster');
+          setIsAdmin(admin);
+          setIsBooster(booster || admin); // 👈 admin también ve el panel booster
+        } catch (err) {
+          console.error('Error loading user roles:', err);
+        }
+      }
+    };
+    loadUserRoles();
   }, [user]);
 
   const handleLogout = () => {
@@ -63,6 +84,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
     setIsMobileMenuOpen(false);
   };
 
+  // Cerrar dropdowns al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) 
@@ -99,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
 
       <div className={`nav-container ${isMobileMenuOpen ? 'show' : ''}`}>
         <div className="nav-links">
-          {/* Dropdown League of Legends */}
+          {/* LOL */}
           <div className="nav-dropdown" ref={lolDropdownRef}>
             <button 
               className="dropdown-button" 
@@ -116,7 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
             </div>
           </div>
 
-          {/* Dropdown Valorant */}
+          {/* Valorant */}
           <div className="nav-dropdown" ref={valorantDropdownRef}>
             <button 
               className="dropdown-button" 
@@ -133,7 +155,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
         </div>
 
         <div className="nav-right">
-          {/* Dropdown de Idioma */}
+          {/* Idioma */}
           <div className="language-dropdown" ref={languageDropdownRef}>
             <button 
               className="language-dropdown-button" 
@@ -146,38 +168,26 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
             <div className={`language-dropdown-content ${isLanguageDropdownOpen ? 'show' : ''}`}>
               <button 
                 className="dropdown-item" 
-                onClick={() => { 
-                  i18n.changeLanguage('en'); 
-                  setIsLanguageDropdownOpen(false); 
-                  setIsMobileMenuOpen(false); 
-                }}
+                onClick={() => { i18n.changeLanguage('en'); setIsLanguageDropdownOpen(false); setIsMobileMenuOpen(false); }}
               >
                 {i18n.language === 'en' && <Check size={16} />} English
               </button>
               <button 
                 className="dropdown-item" 
-                onClick={() => { 
-                  i18n.changeLanguage('es'); 
-                  setIsLanguageDropdownOpen(false); 
-                  setIsMobileMenuOpen(false); 
-                }}
+                onClick={() => { i18n.changeLanguage('es'); setIsLanguageDropdownOpen(false); setIsMobileMenuOpen(false); }}
               >
                 {i18n.language === 'es' && <Check size={16} />} Español
               </button>
               <button 
                 className="dropdown-item" 
-                onClick={() => { 
-                  i18n.changeLanguage('pt'); 
-                  setIsLanguageDropdownOpen(false); 
-                  setIsMobileMenuOpen(false); 
-                }}
+                onClick={() => { i18n.changeLanguage('pt'); setIsLanguageDropdownOpen(false); setIsMobileMenuOpen(false); }}
               >
                 {i18n.language === 'pt' && <Check size={16} />} Português
               </button>
             </div>
           </div>
 
-          {/* Menú de Usuario / Botón de Login */}
+          {/* Usuario */}
           {user ? (
             <div className="user-dropdown" ref={userDropdownRef}>
               <button 
@@ -185,38 +195,36 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
               >
                 <UserCircle size={18} className="user-icon" />
-                {/* CAMBIADO: Ahora muestra el nombre real */}
                 <span className="user-name">{displayName}</span>
                 <ChevronDown size={16} className={`dropdown-arrow ${isUserDropdownOpen ? 'open' : ''}`} />
               </button>
               <div className={`user-dropdown-content ${isUserDropdownOpen ? 'show' : ''}`}>
-                <button 
-                  onClick={() => handleNavLinkClick("/profile")} 
-                  className="dropdown-item"
-                >
-                  <User size={16} className="dropdown-icon" />
-                  {t('navbar.profile') || 'Mi Perfil'}
+                <button onClick={() => handleNavLinkClick("/profile")} className="dropdown-item">
+                  <User size={16} className="dropdown-icon" /> {t('navbar.profile') || 'Mi Perfil'}
                 </button>
-                
-                <button 
-                  onClick={() => handleNavLinkClick("/my-orders")} 
-                  className="dropdown-item"
-                >
-                  <UserCircle size={16} className="dropdown-icon" />
-                  {t('navbar.myorders')}
+                <button onClick={() => handleNavLinkClick("/my-orders")} className="dropdown-item">
+                  <UserCircle size={16} className="dropdown-icon" /> {t('navbar.myorders')}
                 </button>
-                
+
+                {/* Botones de roles */}
+                {isBooster && (
+                  <button onClick={() => handleNavLinkClick("/booster/dashboard")} className="dropdown-item">
+                    <Package size={16} className="dropdown-icon" /> Panel Booster
+                  </button>
+                )}
+                {isAdmin && (
+                  <button onClick={() => handleNavLinkClick("/admin/users")} className="dropdown-item">
+                    <Shield size={16} className="dropdown-icon" /> Admin
+                  </button>
+                )}
+
                 <button onClick={handleLogout} className="dropdown-item">
-                  <LogOut size={16} className="dropdown-icon" />
-                  {t('navbar.logout')}
+                  <LogOut size={16} className="dropdown-icon" /> {t('navbar.logout')}
                 </button>
               </div>
             </div>
           ) : (
-            <button 
-              onClick={() => handleNavLinkClick('/login')} 
-              className="nav-button login-button"
-            >
+            <button onClick={() => handleNavLinkClick('/login')} className="nav-button login-button">
               {t('navbar.login')} →
             </button>
           )}

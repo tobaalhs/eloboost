@@ -17,6 +17,10 @@ import ProfilePage from './pages/ProfilePage.tsx';
 import CompleteProfilePage from './pages/CompleteProfilePage.tsx';
 import { ProfileChecker } from './components/ProfileChecker.tsx';
 import AdminUsersPage from './pages/admin/AdminUsersPage.tsx';
+import BoosterDashboard from './pages/booster/BoosterDashboard.tsx';
+import AvailableOrdersPage from './pages/booster/AvailableOrdersPage.tsx';
+import MyBoosterOrdersPage from './pages/booster/MyBoosterOrdersPage.tsx';
+import BoosterEarningsPage from './pages/booster/BoosterEarningsPage.tsx';
 
 function ConditionalProfileChecker({ children }: { children: React.ReactNode }) {
   const { user } = useAuthenticator((context) => [context.user]);
@@ -118,6 +122,50 @@ function App() {
                 <Authenticator>
                   <ProfileChecker>
                     <AdminUsersPage />
+                  </ProfileChecker>
+                </Authenticator>
+              }
+            />
+            
+            <Route 
+              path="/booster/dashboard"
+              element={
+                <Authenticator>
+                  <ProfileChecker>
+                    <BoosterDashboard />
+                  </ProfileChecker>
+                </Authenticator>
+              }
+            />
+
+            <Route 
+              path="/booster/available-orders"
+              element={
+                <Authenticator>
+                  <ProfileChecker>
+                    <AvailableOrdersPage />
+                  </ProfileChecker>
+                </Authenticator>
+              }
+            />
+
+            <Route 
+              path="/booster/my-orders"
+              element={
+                <Authenticator>
+                  <ProfileChecker>
+                    <MyBoosterOrdersPage />
+                  </ProfileChecker>
+                </Authenticator>
+              }
+            />
+
+            <Route 
+              path="/booster/earnings"
+              element={
+                <Authenticator>
+                  <ProfileChecker>
+                    <BoosterEarningsPage />
                   </ProfileChecker>
                 </Authenticator>
               }

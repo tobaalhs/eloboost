@@ -40,3 +40,88 @@
     border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.3s;
 }
 .cancel-button:hover { background: #c0392b; }
+
+
+.live-progress-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 20px 0;
+  gap: 15px;
+}
+
+/* Estilos para cada bloque de rango (actual y deseado) */
+.rank-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rank-display h3 {
+  font-size: 1rem;
+  color: #FFD700;
+  margin: 0 0 10px 0;
+  font-weight: normal;
+}
+
+.rank-display p {
+  margin: 10px 0 0 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Emblema de rango */
+.rank-emblem {
+  width: 120px;
+  height: auto;
+}
+
+/* Flecha de progreso */
+.progress-arrow {
+  font-size: 3rem;
+  color: #FFD700;
+}
+
+/* Botón de seguimiento en vivo */
+.progress-button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin-top: 20px;
+  background-color: #FFD700;
+  color: #0a061d;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.progress-button:hover {
+  background-color: #fff;
+  transform: scale(1.02);
+}
+
+/* Ajuste para que la nueva tarjeta se posicione correctamente */
+.booster-details {
+  grid-column: 2 / 3; /* Se ubicará en la segunda columna */
+  /* Puedes ajustar grid-row si quieres que aparezca en otro lugar */
+}
+
+.booster-details .booster-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-top: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.booster-profile .booster-icon {
+  width: 40px;
+  height: 40px;
+  color: #FFD700;
+}

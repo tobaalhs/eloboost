@@ -61,16 +61,23 @@
         "adminUsersFunction": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
           "s3Key": "amplify-builds/adminUsersFunction-564b6a46534939556147-build.zip"
+        },
+        "boosterOrdersFunction": {
+          "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
+          "s3Key": "amplify-builds/boosterOrdersFunction-2b6e384b715a61303554-build.zip",
+          "boosterCommissionRate": "0.7"
         }
       },
       "api": {
         "eloboostApi": {},
         "AdminQueries": {},
         "userManagementAPI": {},
-        "adminAPI": {}
+        "adminAPI": {},
+        "boosterAPI": {}
       },
       "storage": {
-        "orders": {}
+        "orders": {},
+        "BoosterAssignments": {}
       }
     }
   }

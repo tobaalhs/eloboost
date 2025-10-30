@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "storage": {
+      "orders": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "BoosterAssignments": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "boosterCommissionRate",
+      "environmentVariableName": "BOOSTER_COMMISSION_RATE"
+    }
+  ]
+}

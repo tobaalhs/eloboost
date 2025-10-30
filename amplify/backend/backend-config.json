@@ -36,6 +36,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "boosterAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "boosterOrdersFunction"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "eloboostApi": {
       "dependsOn": [
         {
@@ -173,6 +187,31 @@
           ],
           "category": "auth",
           "resourceName": "eloboostde5c54ef"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "boosterOrdersFunction": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "orders"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "BoosterAssignments"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -340,6 +379,30 @@
         }
       ]
     },
+    "AMPLIFY_function_boosterOrdersFunction_boosterCommissionRate": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "boosterOrdersFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_boosterOrdersFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "boosterOrdersFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_boosterOrdersFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "boosterOrdersFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_cancelOrderFunction_deploymentBucketName": {
       "usedBy": [
         {
@@ -486,6 +549,10 @@
     }
   },
   "storage": {
+    "BoosterAssignments": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
     "orders": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"

@@ -10,6 +10,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "boosterAPI": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "eloboostApi": {
       "ApiId": "string",
       "ApiName": "string",
@@ -43,6 +48,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "adminUsersFunction": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "boosterOrdersFunction": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
@@ -114,6 +126,14 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "storage": {
+    "BoosterAssignments": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "StreamArn": "string"
+    },
     "orders": {
       "Arn": "string",
       "Name": "string",

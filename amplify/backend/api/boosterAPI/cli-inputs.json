@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "paths": {
+    "/booster/my-orders": {
+      "name": "/booster/my-orders",
+      "lambdaFunction": "boosterOrdersFunction",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/booster/earnings": {
+      "name": "/booster/earnings",
+      "lambdaFunction": "boosterOrdersFunction",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/booster/orders": {
+      "name": "/booster/orders",
+      "lambdaFunction": "boosterOrdersFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read"
+        ]
+      }
+    },
+    "/booster/update-status/{orderId}": {
+      "name": "/booster/update-status/{orderId}",
+      "lambdaFunction": "boosterOrdersFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

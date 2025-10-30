@@ -1,0 +1,29 @@
+{
+  "resourceName": "BoosterAssignments",
+  "tableName": "BoosterAssignments",
+  "partitionKey": {
+    "fieldName": "assignmentId",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "orderId-status-index",
+      "partitionKey": {
+        "fieldName": "orderId",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "status",
+        "fieldType": "string"
+      }
+    },
+    {
+      "name": "boosterUsername-index",
+      "partitionKey": {
+        "fieldName": "boosterUsername",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}
