@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { get, post } from 'aws-amplify/api';
 import { useNavigate } from 'react-router-dom';
-import { Package, Star, Clock, TrendingUp, AlertCircle } from 'lucide-react';
+import { Package, Star, Clock, AlertCircle } from 'lucide-react';
 import './AvailableOrdersPage.css';
 
 interface Order {
@@ -26,7 +26,6 @@ const AvailableOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<string | null>(null);
-  const [isBooster, setIsBooster] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +48,6 @@ const AvailableOrdersPage: React.FC = () => {
       }
       
       console.log('✅ Access granted - User is booster or admin');
-      setIsBooster(true);
       fetchOrders();
     } catch (err) {
       console.error('Error checking booster access:', err);
@@ -58,94 +56,96 @@ const AvailableOrdersPage: React.FC = () => {
   };
 
   const fetchOrders = async () => {
-  try {
-    setLoading(true);
-    
-    const session = await fetchAuthSession();
-    const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
-    
-    console.log('📤 Sending groups as query param:', groups);
-    
-    const restOperation = get({
-      apiName: 'boosterAPI',
-      path: `/booster/orders?groups=${encodeURIComponent(JSON.stringify(groups))}` // ✅ Query param
-    });
+    try {
+      setLoading(true);
+      
+      const session = await fetchAuthSession();
+      const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
+      
+      console.log('📤 Sending groups as query param:', groups);
+      
+      const restOperation = get({
+        apiName: 'boosterAPI',
+        path: `/booster/orders?groups=${encodeURIComponent(JSON.stringify(groups))}`
+      });
 
-    const response = await restOperation.response;
-    const data = await response.body.json() as any;
-    
-    console.log('✅ Orders fetched:', data);
-    setOrders(data.orders || []);
-  } catch (err: any) {
-    console.error('❌ Error fetching orders:', err);
-    alert('Error al cargar órdenes: ' + (err.message || 'Unknown error'));
-  } finally {
-    setLoading(false);
-  }
-};
-
+      const response = await restOperation.response;
+      const data = await response.body.json() as any;
+      
+      console.log('✅ Orders fetched:', data);
+      setOrders(data.orders || []);
+    } catch (err: any) {
+      console.error('❌ Error fetching orders:', err);
+      alert('Error al cargar órdenes: ' + (err.message || 'Unknown error'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const claimOrder = async (orderId: string) => {
-  if (!window.confirm('¿Estás seguro de tomar esta orden?')) {
-    return;
-  }
-
-  try {
-    setClaiming(orderId);
-
-    // --- INICIO DE LA CORRECCIÓN ---
-
-    const session = await fetchAuthSession();
-    const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
-
-    // 1. Obtenemos el payload del token de forma segura
-    const payload = session.tokens?.idToken?.payload;
-    
-    // 2. Extraemos el 'cognito:username' de forma segura.
-    //    Si no existe, la variable será 'undefined'.
-    const boosterUsername = (payload && payload['name']) 
-      ? payload['name'] as string 
-      : undefined;
-
-    // 3. Creamos el objeto del body de forma explícita.
-    const bodyPayload: { orderId: string; boosterUsername?: string } = {
-      orderId,
-    };
-
-    // 4. SOLO si obtuvimos un nombre de usuario válido, lo añadimos al body.
-    //    Esto satisface a TypeScript porque el objeto es siempre válido.
-    if (boosterUsername) {
-      bodyPayload.boosterUsername = boosterUsername;
+    if (!window.confirm('¿Estás seguro de tomar esta orden?')) {
+      return;
     }
 
-    const restOperation = post({
-      apiName: 'boosterAPI',
-      path: `/booster/orders/${orderId}/claim?groups=${encodeURIComponent(JSON.stringify(groups))}`,
-      options: {
-        body: bodyPayload // Usamos nuestro objeto seguro
+    try {
+      setClaiming(orderId);
+
+      const session = await fetchAuthSession();
+      const payload = session.tokens?.idToken?.payload;
+      const groups = (payload?.['cognito:groups'] as string[]) || [];
+      
+      // ✅ Usar sub (userSub) que es consistente con IAM auth
+      const userSub = payload?.sub as string;
+      const boosterUsername = userSub;
+      
+      // ✅ Obtener el display name del token
+      const displayName = (payload?.['name'] as string) || boosterUsername;
+      
+      console.log('🎯 Claiming order with username (userSub):', boosterUsername);
+      console.log('👤 Display name:', displayName);
+
+      const bodyPayload: { 
+        orderId: string; 
+        boosterUsername?: string;
+        boosterDisplayName?: string; // ✅ AÑADIDO
+      } = {
+        orderId,
+      };
+
+      if (boosterUsername) {
+        bodyPayload.boosterUsername = boosterUsername;
       }
-    });
+      
+      // ✅ CRÍTICO: Enviar también el display name al backend
+      if (displayName) {
+        bodyPayload.boosterDisplayName = displayName;
+      }
 
-    // --- FIN DE LA CORRECCIÓN ---
+      console.log('📤 Sending payload:', bodyPayload);
 
-    const response = await restOperation.response;
-    const data = await response.body.json() as any;
-    
-    console.log('✅ Order claimed:', data);
-    alert(`¡Orden tomada exitosamente! Ganarás $${data.boosterEarnings} USD`);
-    
-    // Recargar órdenes
-    fetchOrders();
-    
-    // Redirigir a mis órdenes
-    navigate('/booster/my-orders');
-  } catch (err: any) {
-    console.error('❌ Error claiming order:', err);
-    alert('Error al tomar orden. Es posible que ya haya sido tomada por otro booster.');
-  } finally {
-    setClaiming(null);
-  }
-};
+      const restOperation = post({
+        apiName: 'boosterAPI',
+        path: `/booster/orders/${orderId}/claim?groups=${encodeURIComponent(JSON.stringify(groups))}`,
+        options: {
+          body: bodyPayload
+        }
+      });
+
+      const response = await restOperation.response;
+      const data = await response.body.json() as any;
+      
+      console.log('✅ Order claimed:', data);
+      alert(`¡Orden tomada exitosamente! Ganarás ${data.boosterEarnings} USD`);
+      
+      fetchOrders();
+      navigate('/booster/my-orders');
+    } catch (err: any) {
+      console.error('❌ Error claiming order:', err);
+      alert('Error al tomar orden. Es posible que ya haya sido tomada por otro booster.');
+    } finally {
+      setClaiming(null);
+    }
+  };
 
   const calculateEarnings = (priceUSD: string) => {
     return (parseFloat(priceUSD) * 0.65).toFixed(2);

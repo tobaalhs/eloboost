@@ -125,3 +125,7 @@
   height: 40px;
   color: #FFD700;
 }
+
+.chat-container {
+  grid-column: 1 / -1; /* Ocupa todas las columnas */
+}

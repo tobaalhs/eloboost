@@ -7,7 +7,9 @@
 	STORAGE_ORDERS_ARN
 	STORAGE_ORDERS_NAME
 	STORAGE_ORDERS_STREAMARN
-Amplify Params - DO NOT EDIT */const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+Amplify Params - DO NOT EDIT */
+
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
@@ -24,7 +26,6 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-
 // ✅ Generar UUID sin require
 const generateUUID = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -39,16 +40,28 @@ const getUserFromEvent = (event) => {
   const cognitoAuthProvider = event.requestContext?.identity?.cognitoAuthenticationProvider;
   if (!cognitoAuthProvider) return null;
   
+  // Formato: cognito-idp.region.amazonaws.com/poolId,cognito-idp.region.amazonaws.com/poolId:CognitoSignIn:sub
   const parts = cognitoAuthProvider.split(':');
   const userSub = parts[parts.length - 1];
   
-  // ✅ Obtener username correcto desde claims
-  const username = event.requestContext?.authorizer?.claims?.['cognito:username'] || userSub;
-  const email = event.requestContext?.authorizer?.claims?.email || '';
+  // ✅ SOLUCIÓN: Con IAM auth, usamos el userSub como username único
+  // Este es consistente para usuarios de Google OAuth
+  const username = userSub;
   
-  console.log('👤 User Info:', { userSub, username, email });
+  // Intentar obtener info adicional si está disponible
+  const claims = event.requestContext?.authorizer?.claims || {};
+  const email = claims['email'] || '';
+  const displayName = claims['name'] || username;
   
-  return { userSub, username, email };
+  console.log('👤 User Info:', { 
+    userSub, 
+    username, 
+    displayName, 
+    email,
+    authProvider: cognitoAuthProvider
+  });
+  
+  return { userSub, username, email, displayName };
 };
 
 const isUserBoosterOrAdmin = async (event) => {
@@ -86,8 +99,6 @@ const isUserBoosterOrAdmin = async (event) => {
     return false;
   }
 };
-
-
 
 // 1. Listar órdenes disponibles para boosters
 const listAvailableOrders = async () => {
@@ -137,14 +148,33 @@ const claimOrder = async (orderId, boosterInfo, body) => {
     const orderResult = await docClient.send(new GetCommand(getOrderParams));
     const order = orderResult.Item;
 
-    if (!order) { return { statusCode: 404, headers, body: JSON.stringify({ message: 'Orden no encontrada' }) }; }
-    if (order.boosterUsername) { return { statusCode: 400, headers, body: JSON.stringify({ message: 'Esta orden ya fue tomada por otro booster' }) }; }
+    if (!order) { 
+      return { 
+        statusCode: 404, 
+        headers, 
+        body: JSON.stringify({ message: 'Orden no encontrada' }) 
+      }; 
+    }
+    
+    if (order.boosterUsername) { 
+      return { 
+        statusCode: 400, 
+        headers, 
+        body: JSON.stringify({ message: 'Esta orden ya fue tomada por otro booster' }) 
+      }; 
+    }
 
     const boosterEarnings = (parseFloat(order.priceUSD) * BOOSTER_COMMISSION_RATE).toFixed(2);
     const boosterEarningsCLP = (parseFloat(order.priceCLP) * BOOSTER_COMMISSION_RATE).toFixed(2);
 
-    // Lógica corregida: Prioriza el nombre de usuario enviado desde el frontend.
+    // ✅ SOLUCIÓN: Priorizar el displayName del body (frontend), luego del token
     const boosterUsernameToSave = body.boosterUsername || boosterInfo.username;
+    const boosterDisplayNameToSave = body.boosterDisplayName || boosterInfo.displayName || boosterUsernameToSave;
+    
+    console.log('💾 Saving assignment with:');
+    console.log('   - username (ID):', boosterUsernameToSave);
+    console.log('   - displayName (nombre):', boosterDisplayNameToSave);
+    console.log('   - from body:', { username: body.boosterUsername, displayName: body.boosterDisplayName });
 
     const now = new Date().toISOString();
     const assignmentId = `assignment-${Date.now()}-${generateUUID().split('-')[0]}`;
@@ -152,29 +182,42 @@ const claimOrder = async (orderId, boosterInfo, body) => {
     const assignmentParams = {
       TableName: ASSIGNMENTS_TABLE,
       Item: {
-        assignmentId, orderId,
-        boosterUsername: boosterUsernameToSave, // ¡Usa el nombre correcto!
+        assignmentId, 
+        orderId,
+        boosterUsername: boosterUsernameToSave,
         boosterEmail: boosterInfo.email || '',
-        status: 'CLAIMED', createdAt: now, claimedAt: now, updatedAt: now,
+        boosterDisplayName: boosterDisplayNameToSave,
+        status: 'CLAIMED', 
+        createdAt: now, 
+        claimedAt: now, 
+        updatedAt: now,
         boosterEarnings: parseFloat(boosterEarnings),
         boosterEarningsCLP: parseFloat(boosterEarningsCLP),
-        isPaid: false, isPriority: order.isPriority || false,
-        orderSubject: order.subject, fromRank: order.fromRank, toRank: order.toRank,
-        server: order.server, nickname: order.nickname, ttl: order.ttl
+        isPaid: false, 
+        isPriority: order.isPriority || false,
+        orderSubject: order.subject, 
+        fromRank: order.fromRank, 
+        toRank: order.toRank,
+        server: order.server, 
+        nickname: order.nickname, 
+        ttl: order.ttl
       }
     };
+    
     await docClient.send(new PutCommand(assignmentParams));
 
     const updateOrderParams = {
       TableName: ORDERS_TABLE,
       Key: { orderId },
-      UpdateExpression: 'SET boosterUsername = :username, boosterAssignedAt = :now, boosterStatus = :status, updatedAt = :now',
+      UpdateExpression: 'SET boosterUsername = :username, boosterDisplayName = :displayName, boosterAssignedAt = :now, boosterStatus = :status, updatedAt = :now',
       ExpressionAttributeValues: {
-        ':username': boosterUsernameToSave, // ¡Usa el mismo nombre aquí también!
+        ':username': boosterUsernameToSave,
+        ':displayName': boosterDisplayNameToSave,
         ':now': now,
         ':status': 'CLAIMED'
       }
     };
+    
     await docClient.send(new UpdateCommand(updateOrderParams));
 
     console.log('✅ Order claimed:', orderId, 'by', boosterUsernameToSave);
@@ -182,17 +225,27 @@ const claimOrder = async (orderId, boosterInfo, body) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ message: 'Orden tomada exitosamente', assignmentId, boosterEarnings: parseFloat(boosterEarnings) })
+      body: JSON.stringify({ 
+        message: 'Orden tomada exitosamente', 
+        assignmentId, 
+        boosterEarnings: parseFloat(boosterEarnings) 
+      })
     };
   } catch (error) {
     console.error('Error claiming order:', error);
-    return { statusCode: 500, headers, body: JSON.stringify({ message: 'Error al tomar orden', error: error.message }) };
+    return { 
+      statusCode: 500, 
+      headers, 
+      body: JSON.stringify({ message: 'Error al tomar orden', error: error.message }) 
+    };
   }
 };
 
 // 3. Listar mis órdenes (del booster)
 const getMyOrders = async (boosterUsername) => {
   try {
+    console.log('🔍 Querying assignments for username:', boosterUsername);
+    
     const params = {
       TableName: ASSIGNMENTS_TABLE,
       IndexName: 'boosterUsername-index',
@@ -224,6 +277,8 @@ const getMyOrders = async (boosterUsername) => {
 // 4. Actualizar estado de orden
 const updateOrderStatus = async (orderId, status, boosterUsername) => {
   try {
+    console.log('🔄 Updating order status:', { orderId, status, boosterUsername });
+    
     const now = new Date().toISOString();
     const updateFields = {
       status,
@@ -249,6 +304,7 @@ const updateOrderStatus = async (orderId, status, boosterUsername) => {
     const assignment = (assignmentResult.Items || [])[0];
 
     if (!assignment) {
+      console.log('❌ Assignment not found for orderId:', orderId);
       return {
         statusCode: 404,
         headers,
@@ -256,11 +312,27 @@ const updateOrderStatus = async (orderId, status, boosterUsername) => {
       };
     }
 
+    console.log('📋 Assignment found:', {
+      assignmentUsername: assignment.boosterUsername,
+      requestUsername: boosterUsername,
+      match: assignment.boosterUsername === boosterUsername
+    });
+
+    // ✅ CRÍTICO: Comparar los usernames correctamente
     if (assignment.boosterUsername !== boosterUsername) {
+      console.log('❌ Username mismatch!');
+      console.log('   Assignment username:', assignment.boosterUsername);
+      console.log('   Request username:', boosterUsername);
       return {
         statusCode: 403,
         headers,
-        body: JSON.stringify({ message: 'No tienes permiso para actualizar esta orden' })
+        body: JSON.stringify({ 
+          message: 'No tienes permiso para actualizar esta orden',
+          debug: {
+            assignmentUsername: assignment.boosterUsername,
+            requestUsername: boosterUsername
+          }
+        })
       };
     }
 
@@ -336,6 +408,8 @@ const updateOrderStatus = async (orderId, status, boosterUsername) => {
 // 5. Ver ganancias
 const getEarnings = async (boosterUsername) => {
   try {
+    console.log('💰 Fetching earnings for:', boosterUsername);
+    
     const params = {
       TableName: ASSIGNMENTS_TABLE,
       IndexName: 'boosterUsername-index',
@@ -378,7 +452,7 @@ const getEarnings = async (boosterUsername) => {
 };
 
 exports.handler = async (event) => {
-  console.log("Forcing update with new headers config v2...");
+  console.log("🚀 Booster API Handler v3 - with cognito:username support");
   console.log('📥 Event received:', JSON.stringify(event, null, 2));
 
   if (event.httpMethod === 'OPTIONS') {
@@ -411,7 +485,7 @@ exports.handler = async (event) => {
     const method = event.httpMethod;
     const body = event.body ? JSON.parse(event.body) : {};
 
-    console.log('🔍 Request:', { method, path, body });
+    console.log('🔍 Request:', { method, path, userInfo: { username: userInfo.username, displayName: userInfo.displayName } });
 
     // GET /booster/orders - Listar órdenes disponibles
     if (method === 'GET' && path.includes('/booster/orders') && !path.includes('/my-orders')) {
@@ -421,7 +495,7 @@ exports.handler = async (event) => {
     // POST /booster/orders/{orderId}/claim - Tomar una orden
     if (method === 'POST' && path.includes('/claim')) {
       const orderId = event.pathParameters?.orderId || body.orderId;
-      return await claimOrder(orderId, userInfo, body); // Correcto
+      return await claimOrder(orderId, userInfo, body);
     }
 
     // GET /booster/my-orders - Mis órdenes
@@ -438,10 +512,13 @@ exports.handler = async (event) => {
       return await getMyOrders(boosterUsernameFromQuery);
     }
 
-    // PUT /booster/orders/{orderId}/status - Actualizar estado
+    // PUT /booster/update-status/{orderId} - Actualizar estado
     if (method === 'PUT' && path.includes('/update-status')) { 
       const orderId = event.pathParameters?.orderId || body.orderId;
       const status = body.status;
+      
+      console.log('📝 Update request:', { orderId, status, username: userInfo.username });
+      
       return await updateOrderStatus(orderId, status, userInfo.username);
     }
 

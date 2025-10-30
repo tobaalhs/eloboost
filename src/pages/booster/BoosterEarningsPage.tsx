@@ -30,7 +30,7 @@ interface EarningsData {
 const BoosterEarningsPage: React.FC = () => {
   const [earnings, setEarnings] = useState<EarningsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isBooster, setIsBooster] = useState(false);
+  const [displayName, setDisplayName] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +40,12 @@ const BoosterEarningsPage: React.FC = () => {
   const checkBoosterAccess = async () => {
     try {
       const session = await fetchAuthSession();
-      const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
+      const payload = session.tokens?.idToken?.payload;
+      const groups = (payload?.['cognito:groups'] as string[]) || [];
+      
+      // ✅ Obtener display name para mostrar
+      const name = (payload?.['name'] as string) || 'Booster';
+      setDisplayName(name);
       
       const groupsLower = groups.map(g => g.toLowerCase());
       
@@ -50,7 +55,6 @@ const BoosterEarningsPage: React.FC = () => {
         return;
       }
       
-      setIsBooster(true);
       fetchEarnings(groups);
     } catch (err) {
       console.error('Error checking booster access:', err);
@@ -96,7 +100,7 @@ const BoosterEarningsPage: React.FC = () => {
     <div className="booster-earnings-page">
       <div className="page-header">
         <h1>Mis Ganancias</h1>
-        <p>Historial completo de ganancias y pagos</p>
+        <p>{displayName}, aquí está tu historial completo de ganancias y pagos</p>
       </div>
 
       {/* Resumen de Ganancias */}

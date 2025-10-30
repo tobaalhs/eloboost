@@ -15,6 +15,10 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "eloboost": {
+      "GraphQLAPIEndpointOutput": "string",
+      "GraphQLAPIIdOutput": "string"
+    },
     "eloboostApi": {
       "ApiId": "string",
       "ApiName": "string",

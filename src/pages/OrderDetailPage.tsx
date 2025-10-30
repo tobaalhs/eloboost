@@ -6,8 +6,9 @@ import { get, post } from 'aws-amplify/api';
 import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import './OrderDetailPage.css';
+import ChatBox from '../components/ChatBox.tsx';
 
-// Importaciones de imágenes (sin cambios)
+// Importaciones de imágenes
 import ironImg from '../assets/ranks/iron.svg';
 import bronzeImg from '../assets/ranks/bronze.svg';
 import silverImg from '../assets/ranks/silver.svg';
@@ -32,7 +33,6 @@ const rankImageMap: { [key: string]: string } = {
   challenger: challengerImg
 };
 
-// --- CAMBIO #1: Añadir boosterUsername a la interfaz ---
 interface OrderDetails {
   orderId: string;
   nickname: string;
@@ -47,7 +47,8 @@ interface OrderDetails {
   offlineMode: boolean;
   priorityBoost: boolean;
   selectedChampions?: string;
-  boosterUsername?: string; // <-- AÑADIDO
+  boosterUsername?: string; // ID único del booster (sub)
+  boosterDisplayName?: string; // ✅ Nombre legible del booster
 }
 
 const getRankImageUrl = (rank: string): string => {
@@ -113,7 +114,7 @@ const OrderDetailPage: React.FC = () => {
   }, [orderId, t]);
 
   const handleCancelOrder = async () => {
-    // ... (sin cambios en esta función)
+    // Sin cambios en esta función
   };
 
   if (status === 'loading') {
@@ -174,17 +175,21 @@ const OrderDetailPage: React.FC = () => {
             <div className="detail-item"><span>{t('orderdetail.priority')}:</span> <span>{order.priorityBoost ? 'Sí' : 'No'}</span></div>
           </div>
 
-          {/* --- CAMBIO #2: Añadir la tarjeta del booster --- */}
-          {order.boosterUsername && (
+          {/* ✅ Mostrar el nombre legible del booster */}
+          {(order.boosterDisplayName || order.boosterUsername) && (
             <div className="detail-card booster-details">
               <h2>Tu Booster</h2>
               <div className="booster-profile">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="booster-icon"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>{order.boosterUsername}</span>
+                <span>{order.boosterDisplayName || order.boosterUsername}</span>
               </div>
             </div>
           )}
-          {/* --- FIN DEL CAMBIO --- */}
+
+          <div className="detail-card chat-container">
+            <h2>Chat con tu Booster</h2>
+            {order.orderId && <ChatBox orderId={order.orderId} />}
+          </div>
 
           {order.status === 'pending' && (
             <div className="cancel-section">

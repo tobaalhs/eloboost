@@ -1,0 +1,14 @@
+type Message 
+  @model 
+  @auth(rules: [
+    { allow: private, operations: [create, read] },
+    { allow: owner, operations: [update, delete] }
+  ]) 
+{
+  id: ID!
+  # Agregar sortDirection: ["createdAt"] para ordenar por fecha
+  chatId: String! @index(name: "byChat", sortKeyFields: ["createdAt"], queryField: "messagesByChat")
+  content: String!
+  sender: String!
+  createdAt: AWSDateTime!
+}

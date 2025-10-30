@@ -11,15 +11,14 @@
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a1a2e;
+  font-size: 2rem;
+  color: #fff;
   margin-bottom: 0.5rem;
 }
 
 .page-header p {
-  font-size: 1.1rem;
-  color: #6b7280;
+  color: #aaa;
+  font-size: 1rem;
 }
 
 .orders-section {
@@ -28,58 +27,76 @@
 
 .orders-section h2 {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #1a1a2e;
+  color: #fff;
   margin-bottom: 1.5rem;
+}
+
+.loading-spinner {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  min-height: 400px;
+  color: #fff;
+  font-size: 1.2rem;
 }
 
 .no-orders {
-  background: white;
-  border-radius: 12px;
-  padding: 3rem 2rem;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  color: #888;
 }
 
 .no-orders svg {
-  color: #9ca3af;
   margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
 .no-orders p {
-  color: #6b7280;
+  margin: 0;
   font-size: 1.1rem;
 }
 
-.orders-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+/* ✅ Layout para orden activa + chat */
+.active-order-container {
+  margin-bottom: 2rem;
 }
 
+.active-order-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .active-order-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Order Card */
 .order-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.order-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
 }
 
 .active-order {
-  border-left: 4px solid #3b82f6;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
 }
 
 .completed-order {
-  border-left: 4px solid #10b981;
-  opacity: 0.85;
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  opacity: 0.8;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .order-card-header {
@@ -93,95 +110,88 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .status-claimed {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
 }
 
 .status-progress {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
 }
 
 .status-completed {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
 }
 
 .status-cancelled {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }
 
 .priority-badge {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
   color: white;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
   letter-spacing: 0.5px;
 }
 
 .order-card h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1a1a2e;
+  font-size: 1.25rem;
+  color: #fff;
   margin-bottom: 1rem;
 }
 
 .order-details {
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 1rem 0;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.detail-row:last-child {
-  margin-bottom: 0;
 }
 
 .detail-label {
+  color: #aaa;
   font-size: 0.9rem;
-  color: #6b7280;
-  font-weight: 500;
 }
 
 .detail-value {
-  font-size: 0.9rem;
-  color: #1f2937;
-  font-weight: 600;
+  color: #fff;
+  font-weight: 500;
 }
 
 .rank-badge {
-  background: #f3f4f6;
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
   padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
 }
 
 .earnings-text {
-  color: #10b981;
-  font-size: 1rem;
-  font-weight: 700;
+  color: #22c55e;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .order-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .action-btn {
@@ -196,41 +206,58 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .start-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
 }
 
 .start-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
 
 .complete-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
 }
 
 .complete-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16a34a, #15803d);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
 
 .action-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.loading-spinner {
+/* ✅ Chat Section */
+.chat-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: fit-content;
+  max-height: 600px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  font-size: 1.2rem;
-  color: #6b7280;
+  flex-direction: column;
+}
+
+.chat-section h3 {
+  font-size: 1.25rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+/* Grid para órdenes completadas */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
 }
 
 @media (max-width: 768px) {
@@ -238,11 +265,15 @@
     padding: 1rem;
   }
 
-  .page-header h1 {
-    font-size: 2rem;
-  }
-
   .orders-grid {
     grid-template-columns: 1fr;
+  }
+
+  .order-actions {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
   }
 }

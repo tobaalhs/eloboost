@@ -18,7 +18,7 @@ interface EarningsData {
 const BoosterDashboard: React.FC = () => {
   const [earnings, setEarnings] = useState<EarningsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isBooster, setIsBooster] = useState(false);
+  const [displayName, setDisplayName] = useState<string>('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,49 +26,50 @@ const BoosterDashboard: React.FC = () => {
   }, []);
 
   const checkBoosterAccess = async () => {
-  try {
-    const session = await fetchAuthSession();
-    // CAMBIO: Usa idToken en lugar de accessToken para los grupos
-    const groups = (session.tokens?.idToken?.payload['cognito:groups'] as string[]) || [];
+    try {
+      const session = await fetchAuthSession();
+      const payload = session.tokens?.idToken?.payload;
+      const groups = (payload?.['cognito:groups'] as string[]) || [];
 
-    const groupsLower = groups.map(g => g.toLowerCase());
+      // ✅ Obtener display name para mostrar
+      const name = (payload?.['name'] as string) || 'Booster';
+      setDisplayName(name);
 
-    if (!groupsLower.includes('booster') && !groupsLower.includes('admin')) {
-      console.log('❌ Access denied - Not booster');
+      const groupsLower = groups.map(g => g.toLowerCase());
+
+      if (!groupsLower.includes('booster') && !groupsLower.includes('admin')) {
+        console.log('❌ Access denied - Not booster');
+        navigate('/');
+        return;
+      }
+
+      fetchEarnings(groups);
+    } catch (err) {
+      console.error('Error checking booster access:', err);
       navigate('/');
-      return;
     }
+  };
 
-    setIsBooster(true);
-    // Pasa los grupos a la función que hace la llamada
-    fetchEarnings(groups);
-  } catch (err) {
-    console.error('Error checking booster access:', err);
-    navigate('/');
-  }
-};
+  const fetchEarnings = async (groups: string[]) => {
+    try {
+      setLoading(true);
 
-  const fetchEarnings = async (groups: string[]) => { // Acepta los grupos
-  try {
-    setLoading(true);
+      const restOperation = get({
+        apiName: 'boosterAPI',
+        path: `/booster/earnings?groups=${encodeURIComponent(JSON.stringify(groups))}`
+      });
 
-    const restOperation = get({
-      apiName: 'boosterAPI',
-      // CAMBIO: Añade los grupos como query parameter
-      path: `/booster/earnings?groups=${encodeURIComponent(JSON.stringify(groups))}`
-    });
+      const response = await restOperation.response;
+      const data = await response.body.json() as any;
 
-    const response = await restOperation.response;
-    const data = await response.body.json() as any;
-
-    console.log('✅ Earnings fetched:', data);
-    setEarnings(data);
-  } catch (err: any) {
-    console.error('❌ Error fetching earnings:', err);
-  } finally {
-    setLoading(false);
-  }
-};
+      console.log('✅ Earnings fetched:', data);
+      setEarnings(data);
+    } catch (err: any) {
+      console.error('❌ Error fetching earnings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -82,7 +83,7 @@ const BoosterDashboard: React.FC = () => {
     <div className="booster-dashboard">
       <div className="dashboard-header">
         <h1>Panel de Booster</h1>
-        <p>Bienvenido a tu panel de trabajo</p>
+        <p>Bienvenido, {displayName} 👋</p>
       </div>
 
       {/* Tarjetas de estadísticas */}
