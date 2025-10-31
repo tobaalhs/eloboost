@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { get, put } from 'aws-amplify/api';
 import { useNavigate } from 'react-router-dom';
-import { Package, Clock, CheckCircle, Play, AlertCircle } from 'lucide-react';
-import ChatBox from '../../components/ChatBox.tsx'; // ✅ Importar ChatBox
+import { Package, Clock, CheckCircle, Play, AlertCircle, Copy } from 'lucide-react';
+import ChatBox from '../../components/ChatBox.tsx';
 import './MyBoosterOrdersPage.css';
 
 interface Assignment {
@@ -22,6 +22,11 @@ interface Assignment {
   claimedAt: string;
   startedAt?: string;
   completedAt?: string;
+  credentials?: {
+    username: string | null;
+    password: string | null;
+    updatedAt?: string;
+  };
 }
 
 const MyBoosterOrdersPage: React.FC = () => {
@@ -98,6 +103,15 @@ const MyBoosterOrdersPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert(`${field} copiado al portapapeles`);
+    }).catch(err => {
+      console.error('Error al copiar:', err);
+      alert('Error al copiar al portapapeles');
+    });
   };
 
   const updateOrderStatus = async (orderId: string, status: string) => {
@@ -246,6 +260,72 @@ const MyBoosterOrdersPage: React.FC = () => {
                     )}
                   </div>
 
+                  {/* ✅ Credenciales del cliente */}
+                  {assignment.credentials && assignment.credentials.username && assignment.credentials.password ? (
+                    <div className="credentials-section">
+                      <div className="credentials-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <h4>Credenciales de Acceso</h4>
+                      </div>
+
+                      <div className="credentials-content">
+                        <div className="credential-item">
+                          <span className="credential-label">Usuario:</span>
+                          <span className="credential-value">{assignment.credentials.username}</span>
+                          <button
+                            className="copy-btn"
+                            onClick={() => copyToClipboard(assignment.credentials!.username!, 'Usuario')}
+                            title="Copiar usuario"
+                          >
+                            <Copy size={16} />
+                          </button>
+                        </div>
+                        <div className="credential-item">
+                          <span className="credential-label">Contraseña:</span>
+                          <span className="credential-value">{assignment.credentials.password}</span>
+                          <button
+                            className="copy-btn"
+                            onClick={() => copyToClipboard(assignment.credentials!.password!, 'Contraseña')}
+                            title="Copiar contraseña"
+                          >
+                            <Copy size={16} />
+                          </button>
+                        </div>
+                        {assignment.credentials.updatedAt && (
+                          <div className="credential-timestamp">
+                            Actualizado: {new Date(assignment.credentials.updatedAt).toLocaleString('es-ES')}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="credentials-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span>Si la cuenta tiene código de verificación 2FA, el cliente te lo proporcionará por chat</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="credentials-section credentials-pending">
+                      <div className="credentials-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="8" x2="12" y2="12"></line>
+                          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h4>Credenciales Pendientes</h4>
+                      </div>
+                      <p className="credentials-pending-message">
+                        El cliente aún no ha proporcionado sus credenciales de acceso. Serán visibles aquí cuando las ingrese.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="order-actions">
                     {assignment.status === 'CLAIMED' && (
                       <button
@@ -271,11 +351,28 @@ const MyBoosterOrdersPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* ✅ Chat integrado a la derecha */}
-                <div className="chat-section">
-                  <h3>Chat con el Cliente</h3>
-                  <ChatBox orderId={assignment.orderId} />
-                </div>
+                {/* ✅ Chat integrado a la derecha - Solo si NO está completada */}
+                {assignment.status !== 'COMPLETED' && (
+                  <div className="chat-section">
+                    <h3>Chat con el Cliente</h3>
+                    <ChatBox orderId={assignment.orderId} />
+                  </div>
+                )}
+                
+                {/* ✅ Mensaje cuando ya está completada */}
+                {assignment.status === 'COMPLETED' && (
+                  <div className="chat-section chat-completed">
+                    <h3>Orden Completada</h3>
+                    <div className="completed-message">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      <p>¡Excelente trabajo!</p>
+                      <p className="completed-subtitle">Esta orden ha sido completada</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

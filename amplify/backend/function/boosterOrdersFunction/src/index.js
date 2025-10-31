@@ -11,6 +11,7 @@ Amplify Params - DO NOT EDIT */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const crypto = require('crypto');
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -33,6 +34,26 @@ const generateUUID = () => {
     const v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
+};
+
+// Función para desencriptar credenciales
+const decryptCredentials = (encryptedText, key) => {
+  if (!encryptedText || !key) return null;
+
+  try {
+    const parts = encryptedText.split(':');
+    if (parts.length !== 2) return null;
+
+    const iv = Buffer.from(parts[0], 'hex');
+    const encrypted = parts[1];
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (error) {
+    console.error('Error decrypting credentials:', error);
+    return null;
+  }
 };
 
 // Obtener el username del usuario autenticado
@@ -115,21 +136,32 @@ const listAvailableOrders = async () => {
     };
 
     const result = await docClient.send(new ScanCommand(params));
+    let orders = result.Items || [];
     
-    // Ordenar por prioridad y fecha
-    const orders = result.Items || [];
-    orders.sort((a, b) => {
-      if (a.isPriority && !b.isPriority) return -1;
-      if (!a.isPriority && b.isPriority) return 1;
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+    // ✅ LÓGICA DE PRIORIDAD
+    // Si existe al menos una orden prioritaria, mostrar SOLO las prioritarias
+    // CORRECCIÓN: El campo en DynamoDB es "priorityBoost", no "isPriority"
+    const hasPriorityOrders = orders.some(order => order.priorityBoost === true);
+    
+    if (hasPriorityOrders) {
+      console.log('🌟 Priority orders found - Filtering to show only priority orders');
+      orders = orders.filter(order => order.priorityBoost === true);
+    } else {
+      console.log('📦 No priority orders - Showing all available orders');
+    }
+    
+    // Ordenar por fecha (las más recientes primero)
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    console.log('📦 Available orders:', orders.length);
+    console.log('📦 Orders to display:', orders.length, `(${hasPriorityOrders ? 'priority only' : 'all'})`);
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ orders })
+      body: JSON.stringify({ 
+        orders,
+        hasPriorityOrders // ✅ Info adicional para el frontend
+      })
     };
   } catch (error) {
     console.error('Error listing available orders:', error);
@@ -245,7 +277,7 @@ const claimOrder = async (orderId, boosterInfo, body) => {
 const getMyOrders = async (boosterUsername) => {
   try {
     console.log('🔍 Querying assignments for username:', boosterUsername);
-    
+
     const params = {
       TableName: ASSIGNMENTS_TABLE,
       IndexName: 'boosterUsername-index',
@@ -256,13 +288,67 @@ const getMyOrders = async (boosterUsername) => {
     };
 
     const result = await docClient.send(new QueryCommand(params));
+    const assignments = result.Items || [];
 
-    console.log('📦 My orders for', boosterUsername, ':', result.Items?.length || 0);
+    console.log('📦 My orders for', boosterUsername, ':', assignments.length);
+
+    // Obtener detalles completos de cada orden incluyendo credenciales
+    const ordersWithDetails = await Promise.all(
+      assignments.map(async (assignment) => {
+        try {
+          const orderParams = {
+            TableName: ORDERS_TABLE,
+            Key: { orderId: assignment.orderId }
+          };
+
+          const orderResult = await docClient.send(new GetCommand(orderParams));
+          const order = orderResult.Item;
+
+          if (!order) {
+            console.log('⚠️ Order not found:', assignment.orderId);
+            return assignment;
+          }
+
+          // Desencriptar credenciales si existen
+          let credentials = null;
+          if (order.gameUsername && order.gamePassword && order.encryptionKey) {
+            const decryptedUsername = decryptCredentials(order.gameUsername, order.encryptionKey);
+            const decryptedPassword = decryptCredentials(order.gamePassword, order.encryptionKey);
+
+            if (decryptedUsername && decryptedPassword) {
+              credentials = {
+                username: decryptedUsername,
+                password: decryptedPassword
+              };
+              console.log('🔓 Credentials decrypted for order:', assignment.orderId);
+            }
+          }
+
+          return {
+            ...assignment,
+            credentials,
+            orderDetails: {
+              subject: order.subject,
+              fromRank: order.fromRank,
+              toRank: order.toRank,
+              server: order.server,
+              nickname: order.nickname,
+              status: order.status,
+              boosterStatus: order.boosterStatus,
+              createdAt: order.createdAt
+            }
+          };
+        } catch (error) {
+          console.error('Error fetching order details for', assignment.orderId, error);
+          return assignment;
+        }
+      })
+    );
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ orders: result.Items || [] })
+      body: JSON.stringify({ orders: ordersWithDetails })
     };
   } catch (error) {
     console.error('Error getting my orders:', error);

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(amplify push:*)",
+      "Bash(amplify add:*)",
+      "Bash(ls:*)",
+      "Bash(amplify env get:*)",
+      "Bash(cat:*)",
+      "Bash(npm start)",
+      "Bash(aws dynamodb get-item:*)",
+      "Bash(aws lambda update-function-code:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

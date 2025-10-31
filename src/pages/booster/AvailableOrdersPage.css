@@ -256,3 +256,99 @@
     width: 100%;
   }
 }
+
+/* Estilos adicionales para AvailableOrdersPage.css */
+
+/* ✅ Notificación de filtro de prioridad */
+.priority-filter-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  color: #fbbf24;
+  font-weight: 600;
+  font-size: 0.95rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.priority-filter-notice svg {
+  color: #f59e0b;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Badge de prioridad mejorado */
+.priority-badge {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.6);
+  }
+}
+
+/* ✅ Orden prioritaria destacada */
+.order-card.priority-order {
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(245, 158, 11, 0.03));
+  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.order-card.priority-order::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .priority-filter-notice {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+  }
+}

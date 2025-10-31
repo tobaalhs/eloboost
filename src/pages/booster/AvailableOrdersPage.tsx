@@ -16,7 +16,7 @@ interface Order {
   nickname: string;
   priceUSD: string;
   priceCLP: string;
-  isPriority: boolean;
+  priorityBoost: boolean;
   createdAt: string;
   queueType: string;
   duoBoost: string;
@@ -26,6 +26,7 @@ const AvailableOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<string | null>(null);
+  const [hasPriorityOrders, setHasPriorityOrders] = useState(false); // ✅ NUEVO
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,6 +75,14 @@ const AvailableOrdersPage: React.FC = () => {
       
       console.log('✅ Orders fetched:', data);
       setOrders(data.orders || []);
+      setHasPriorityOrders(data.hasPriorityOrders || false); // ✅ NUEVO
+      
+      // ✅ Log informativo
+      if (data.hasPriorityOrders) {
+        console.log('🌟 Showing only PRIORITY orders');
+      } else {
+        console.log('📦 Showing ALL available orders');
+      }
     } catch (err: any) {
       console.error('❌ Error fetching orders:', err);
       alert('Error al cargar órdenes: ' + (err.message || 'Unknown error'));
@@ -135,7 +144,7 @@ const AvailableOrdersPage: React.FC = () => {
       const data = await response.body.json() as any;
       
       console.log('✅ Order claimed:', data);
-      alert(`¡Orden tomada exitosamente! Ganarás ${data.boosterEarnings} USD`);
+      alert(`¡Orden tomada exitosamente! Ganarás ${data.boosterEarnings} CLP`);
       
       fetchOrders();
       navigate('/booster/my-orders');
@@ -147,8 +156,8 @@ const AvailableOrdersPage: React.FC = () => {
     }
   };
 
-  const calculateEarnings = (priceUSD: string) => {
-    return (parseFloat(priceUSD) * 0.65).toFixed(2);
+  const calculateEarnings = (priceCLP: string) => {
+    return (parseFloat(priceCLP) * 0.65).toFixed(0);
   };
 
   if (loading) {
@@ -164,6 +173,14 @@ const AvailableOrdersPage: React.FC = () => {
       <div className="page-header">
         <h1>Órdenes Disponibles</h1>
         <p>Selecciona una orden para comenzar a trabajar</p>
+        
+        {/* ✅ Mensaje cuando se filtran solo órdenes prioritarias */}
+        {hasPriorityOrders && orders.length > 0 && (
+          <div className="priority-filter-notice">
+            <Star size={20} />
+            <span>Mostrando solo órdenes prioritarias</span>
+          </div>
+        )}
       </div>
 
       {orders.length === 0 ? (
@@ -177,9 +194,9 @@ const AvailableOrdersPage: React.FC = () => {
           {orders.map(order => (
             <div 
               key={order.orderId} 
-              className={`order-card ${order.isPriority ? 'priority-order' : ''}`}
+              className={`order-card ${order.priorityBoost ? 'priority-order' : ''}`}
             >
-              {order.isPriority && (
+              {order.priorityBoost && (
                 <div className="priority-badge">
                   <Star size={16} />
                   PRIORIDAD
@@ -221,8 +238,8 @@ const AvailableOrdersPage: React.FC = () => {
 
               <div className="order-earnings">
                 <div className="earnings-label">Tu ganancia:</div>
-                <div className="earnings-value">${calculateEarnings(order.priceUSD)} USD</div>
-                <div className="earnings-original">Precio total: ${order.priceUSD} USD</div>
+                <div className="earnings-value">${calculateEarnings(order.priceCLP)} CLP</div>
+                <div className="earnings-original">Precio total: ${order.priceCLP} `CLP`</div>
               </div>
 
               <div className="order-footer">

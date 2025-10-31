@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import './OrderDetailPage.css';
 import ChatBox from '../components/ChatBox.tsx';
+import CustomerCredentialsForm from '../components/CustomerCredentialsForm.tsx';
 
 // Importaciones de imágenes
 import ironImg from '../assets/ranks/iron.svg';
@@ -47,8 +48,13 @@ interface OrderDetails {
   offlineMode: boolean;
   priorityBoost: boolean;
   selectedChampions?: string;
-  boosterUsername?: string; // ID único del booster (sub)
-  boosterDisplayName?: string; // ✅ Nombre legible del booster
+  boosterUsername?: string;
+  boosterDisplayName?: string;
+  boosterStatus?: 'CLAIMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'; // ✅ Estado del booster
+  boosterCompletedAt?: string; // ✅ Fecha de completación
+  gameUsername?: string; // ✅ Usuario de juego (encriptado en backend)
+  gamePassword?: string; // ✅ Contraseña de juego (encriptado en backend)
+  credentialsUpdatedAt?: string; // ✅ Fecha de actualización de credenciales
 }
 
 const getRankImageUrl = (rank: string): string => {
@@ -61,6 +67,18 @@ const getRankImageUrl = (rank: string): string => {
   };
   const imageKey = keyMap[tierName];
   return rankImageMap[imageKey] || '';
+};
+
+// ✅ Función para obtener el estado del boost
+const getBoostStatus = (boosterStatus?: string) => {
+  const statusMap: { [key: string]: { text: string; icon: string; class: string } } = {
+    'CLAIMED': { text: 'Booster Asignado', icon: '👤', class: 'boost-claimed' },
+    'IN_PROGRESS': { text: 'Boost en Progreso', icon: '🎮', class: 'boost-in-progress' },
+    'COMPLETED': { text: '✅ Boost Completado', icon: '🎉', class: 'boost-completed' },
+    'CANCELLED': { text: 'Boost Cancelado', icon: '❌', class: 'boost-cancelled' }
+  };
+
+  return statusMap[boosterStatus || ''] || { text: 'Esperando Booster', icon: '⏳', class: 'boost-waiting' };
 };
 
 const OrderDetailPage: React.FC = () => {
@@ -131,7 +149,38 @@ const OrderDetailPage: React.FC = () => {
     );
   }
 
+  const handleCredentialsSaved = () => {
+    // Refrescar los datos de la orden después de guardar credenciales
+    const fetchOrderDetails = async () => {
+      if (!orderId) return;
+
+      try {
+        const restOperation = get({
+          apiName: 'eloboostApi',
+          path: `/order/${orderId}`
+        });
+
+        const { body } = await restOperation.response;
+        const data: unknown = await body.json();
+
+        if (typeof data === 'object' && data !== null && !('error' in data)) {
+          setOrder(data as OrderDetails);
+        }
+      } catch (err) {
+        console.error('Error al refrescar orden:', err);
+      }
+    };
+
+    fetchOrderDetails();
+  };
+
   if (status === 'success' && order) {
+    // ✅ Determinar si mostrar el chat (solo si NO está completado)
+    const showChat = order.boosterStatus !== 'COMPLETED' && order.boosterUsername;
+    const boostStatus = getBoostStatus(order.boosterStatus);
+    const hasCredentials = !!(order.gameUsername && order.gamePassword);
+    const showCredentialsForm = order.status === 'paid'; // Solo mostrar si está pagada
+
     return (
         <div className="detail-container">
         <h1 className="detail-title">{t('orderdetail.title')}</h1>
@@ -150,21 +199,46 @@ const OrderDetailPage: React.FC = () => {
           
           <div className="detail-card progress-tracker">
             <h2>{t('orderdetail.progress')}</h2>
+            
+            {/* ✅ Estado del Boost */}
+            <div className={`boost-status ${boostStatus.class}`}>
+              <span className="boost-status-icon">{boostStatus.icon}</span>
+              <span className="boost-status-text">{boostStatus.text}</span>
+            </div>
+
+            {/* ✅ Mensaje especial cuando está completado */}
+            {order.boosterStatus === 'COMPLETED' && (
+              <div className="boost-completed-message">
+                <div className="completed-icon">🎉</div>
+                <h3>¡Boost Completado!</h3>
+                <p>Tu boost ha sido completado exitosamente.</p>
+                {order.boosterCompletedAt && (
+                  <p className="completed-date">
+                    Completado el: {new Date(order.boosterCompletedAt).toLocaleString('es-ES')}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Progreso visual (siempre visible) */}
             <div className="live-progress-container">
               <div className="rank-display">
-                <h3>Rango Actual</h3>
+                <h3>Rango Inicial</h3>
                 <img src={getRankImageUrl(order.fromRank)} alt={order.fromRank} className="rank-emblem" />
                 <p>{order.fromRank}</p>
               </div>
-              <div className="progress-arrow">→</div>
+              <div className="progress-arrow">
+                {order.boosterStatus === 'COMPLETED' ? '✅' : '→'}
+              </div>
               <div className="rank-display">
-                <h3>Rango Deseado</h3>
+                <h3>Rango Objetivo</h3>
                 <img src={getRankImageUrl(order.toRank)} alt={order.toRank} className="rank-emblem" />
                 <p>{order.toRank}</p>
               </div>
             </div>
+            
             <a href={`https://www.leagueofgraphs.com/summoner/${order.server.toLowerCase()}/${encodeURIComponent(order.nickname)}`} target="_blank" rel="noopener noreferrer" className="progress-button">
-              Haz click aquí para ver el progreso en vivo
+              Ver progreso en vivo
             </a>
           </div>
 
@@ -175,7 +249,30 @@ const OrderDetailPage: React.FC = () => {
             <div className="detail-item"><span>{t('orderdetail.priority')}:</span> <span>{order.priorityBoost ? 'Sí' : 'No'}</span></div>
           </div>
 
-          {/* ✅ Mostrar el nombre legible del booster */}
+          {/* ✅ Formulario de credenciales - Solo para órdenes pagadas */}
+          {showCredentialsForm && (
+            <div className="detail-card credentials-card">
+              <CustomerCredentialsForm
+                orderId={order.orderId}
+                hasCredentials={hasCredentials}
+                onCredentialsSaved={handleCredentialsSaved}
+              />
+              {hasCredentials && (
+                <div className="credentials-saved-indicator">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Credenciales guardadas</span>
+                  {order.credentialsUpdatedAt && (
+                    <small>Última actualización: {new Date(order.credentialsUpdatedAt).toLocaleString('es-CL')}</small>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ✅ Mostrar booster solo si está asignado */}
           {(order.boosterDisplayName || order.boosterUsername) && (
             <div className="detail-card booster-details">
               <h2>Tu Booster</h2>
@@ -186,10 +283,28 @@ const OrderDetailPage: React.FC = () => {
             </div>
           )}
 
-          <div className="detail-card chat-container">
-            <h2>Chat con tu Booster</h2>
-            {order.orderId && <ChatBox orderId={order.orderId} />}
-          </div>
+          {/* ✅ Chat - Solo visible si NO está completado */}
+          {showChat && (
+            <div className="detail-card chat-container">
+              <h2>Chat con tu Booster</h2>
+              <ChatBox orderId={order.orderId} />
+            </div>
+          )}
+
+          {/* ✅ Mensaje cuando el chat ya no está disponible */}
+          {order.boosterStatus === 'COMPLETED' && (
+            <div className="detail-card chat-unavailable">
+              <h2>Chat</h2>
+              <div className="chat-unavailable-message">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  <line x1="9" y1="10" x2="15" y2="10"></line>
+                </svg>
+                <p>El chat ha sido cerrado</p>
+                <p className="chat-closed-reason">Tu boost ha sido completado exitosamente</p>
+              </div>
+            </div>
+          )}
 
           {order.status === 'pending' && (
             <div className="cancel-section">

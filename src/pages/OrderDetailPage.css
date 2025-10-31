@@ -129,3 +129,211 @@
 .chat-container {
   grid-column: 1 / -1; /* Ocupa todas las columnas */
 }
+
+
+.boost-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.boost-status-icon {
+  font-size: 1.5rem;
+}
+
+.boost-status-text {
+  letter-spacing: 0.3px;
+}
+
+/* Estados específicos */
+.boost-waiting {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+  border: 2px solid rgba(156, 163, 175, 0.3);
+}
+
+.boost-claimed {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 2px solid rgba(251, 191, 36, 0.4);
+}
+
+.boost-in-progress {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.boost-completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 2px solid rgba(34, 197, 94, 0.4);
+}
+
+.boost-cancelled {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ✅ Mensaje de Boost Completado */
+.boost-completed-message {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+  border-radius: 16px;
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  margin-bottom: 1.5rem;
+}
+
+.completed-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.boost-completed-message h3 {
+  font-size: 1.5rem;
+  color: #22c55e;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.boost-completed-message p {
+  color: #d1d5db;
+  margin-bottom: 0.25rem;
+}
+
+.completed-date {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
+/* ✅ Flecha de progreso mejorada */
+.progress-arrow {
+  font-size: 2.5rem;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* ✅ Chat no disponible */
+.chat-unavailable {
+  grid-column: 1 / -1;
+}
+
+.chat-unavailable-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0.6;
+}
+
+.chat-unavailable-message svg {
+  opacity: 0.5;
+  color: #6b7280;
+}
+
+.chat-unavailable-message p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 1.1rem;
+}
+
+.chat-closed-reason {
+  font-size: 0.9rem !important;
+  color: #6b7280 !important;
+}
+
+/* ✅ Mejoras visuales para cuando está completado */
+.detail-card.progress-tracker.completed {
+  border: 2px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .boost-status {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+
+  .boost-status-icon {
+    font-size: 1.25rem;
+  }
+
+  .boost-completed-message {
+    padding: 1.5rem;
+  }
+
+  .completed-icon {
+    font-size: 3rem;
+  }
+
+  .boost-completed-message h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* ✅ Estilos para credenciales */
+.credentials-card {
+  grid-column: 1 / -1;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.credentials-saved-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  background: rgba(34, 197, 94, 0.1);
+  border-top: 2px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  font-weight: 500;
+}
+
+.credentials-saved-indicator svg {
+  color: #22c55e;
+  flex-shrink: 0;
+}
+
+.credentials-saved-indicator small {
+  display: block;
+  width: 100%;
+  color: rgba(34, 197, 94, 0.8);
+  font-size: 0.85rem;
+  margin-top: 4px;
+  font-weight: 400;
+}

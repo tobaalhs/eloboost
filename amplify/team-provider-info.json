@@ -64,9 +64,10 @@
         },
         "boosterOrdersFunction": {
           "deploymentBucketName": "amplify-eloboost-dev-ca1df-deployment",
-          "s3Key": "amplify-builds/boosterOrdersFunction-4e72594b6c5435414176-build.zip",
+          "s3Key": "amplify-builds/boosterOrdersFunction-77733068456464717651-build.zip",
           "boosterCommissionRate": "0.7"
-        }
+        },
+        "updateOrderCredentials": {}
       },
       "api": {
         "eloboostApi": {},
