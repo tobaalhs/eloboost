@@ -27,6 +27,14 @@
     "storageordersStreamArn": {
       "Type": "String",
       "Default": "storageordersStreamArn"
+    },
+    "apieloboostGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIEndpointOutput"
+    },
+    "apieloboostGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -90,6 +98,12 @@
             },
             "STORAGE_ORDERS_STREAMARN": {
               "Ref": "storageordersStreamArn"
+            },
+            "API_ELOBOOST_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIEndpointOutput"
+            },
+            "API_ELOBOOST_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIKeyOutput"
             }
           }
         },
@@ -210,7 +224,9 @@
                 "dynamodb:Describe*",
                 "dynamodb:Scan",
                 "dynamodb:Query",
-                "dynamodb:PartiQLSelect"
+                "dynamodb:PartiQLSelect",
+                "dynamodb:UpdateItem",
+                "dynamodb:PutItem"
               ],
               "Resource": [
                 {

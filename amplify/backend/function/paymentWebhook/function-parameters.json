@@ -6,6 +6,16 @@
         "read",
         "update"
       ]
+    },
+    "auth": {
+      "eloboostde5c54ef": [
+        "read"
+      ]
+    },
+    "api": {
+      "eloboost": [
+        "read"
+      ]
     }
   }
 }

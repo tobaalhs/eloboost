@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/notifications": {
+      "name": "/notifications",
+      "lambdaFunction": "notificationsFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

@@ -3,8 +3,12 @@
   "permissions": {
     "storage": {
       "orders": [
-        "read"
+        "read",
+        "update"
       ]
+    },
+    "api": {
+      "eloboost": ["read"]
     }
   }
 }

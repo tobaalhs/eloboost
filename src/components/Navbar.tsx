@@ -3,10 +3,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import { 
-  User, Globe, LogOut, UserCircle, Check, ChevronDown, Menu, X, Shield, Package 
+import {
+  User, Globe, LogOut, UserCircle, Check, ChevronDown, Menu, X, Shield, Package
 } from 'lucide-react';
 import { fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
+import NotificationBellRealtime from './NotificationBellRealtime.tsx';
 import "./Navbar.css";
 
 interface NavbarProps {
@@ -186,6 +187,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, signOut }) => {
               </button>
             </div>
           </div>
+
+          {/* Notificaciones en Tiempo Real */}
+          {user && <NotificationBellRealtime />}
 
           {/* Usuario */}
           {user ? (

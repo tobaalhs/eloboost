@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { get, put } from 'aws-amplify/api';
 import { useNavigate } from 'react-router-dom';
-import { Package, Clock, CheckCircle, Play, AlertCircle, Copy } from 'lucide-react';
+import { Package, Clock, CheckCircle, Play, AlertCircle, Copy, XCircle } from 'lucide-react';
 import ChatBox from '../../components/ChatBox.tsx';
 import './MyBoosterOrdersPage.css';
 
@@ -22,6 +22,7 @@ interface Assignment {
   claimedAt: string;
   startedAt?: string;
   completedAt?: string;
+  clientUserId?: string; // ✅ ID del cliente para notificaciones de chat
   credentials?: {
     username: string | null;
     password: string | null;
@@ -75,7 +76,7 @@ const MyBoosterOrdersPage: React.FC = () => {
       const payload = session.tokens?.idToken?.payload;
       const username = (payload?.sub as string) || '';
       const displayName = (payload?.['name'] as string) || username;
-      
+
       console.log('🔍 Fetching orders for username (userSub):', username);
       console.log('👤 Display name:', displayName);
       console.log('🔍 With groups:', groups);
@@ -95,7 +96,37 @@ const MyBoosterOrdersPage: React.FC = () => {
       const data = await response.body.json() as any;
 
       console.log('✅ My orders fetched:', data);
-      setAssignments(data.orders || []);
+
+      // Obtener credenciales para cada orden activa
+      const ordersWithCredentials = await Promise.all(
+        (data.orders || []).map(async (order: Assignment) => {
+          // Solo buscar credenciales para órdenes activas (no completadas)
+          if (['CLAIMED', 'IN_PROGRESS'].includes(order.status)) {
+            try {
+              const credentialsOp = get({
+                apiName: 'eloboostApi',
+                path: `/order/${order.orderId}/credentials`
+              });
+
+              const credResponse = await credentialsOp.response;
+              const credData = await credResponse.body.json() as any;
+
+              console.log(`🔑 Credentials for order ${order.orderId}:`, credData.credentials);
+
+              return {
+                ...order,
+                credentials: credData.credentials
+              };
+            } catch (err) {
+              console.log(`⚠️ No credentials yet for order ${order.orderId}`);
+              return order;
+            }
+          }
+          return order;
+        })
+      );
+
+      setAssignments(ordersWithCredentials);
     } catch (err: any) {
       console.error('❌ Error fetching my orders:', err);
       console.error('❌ Error response:', err.response);
@@ -145,6 +176,37 @@ const MyBoosterOrdersPage: React.FC = () => {
     } catch (err: any) {
       console.error('❌ Error updating order status:', err);
       alert('Error al actualizar estado de la orden');
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const releaseOrder = async (orderId: string) => {
+    if (!window.confirm('¿Estás seguro de ceder esta orden? La orden volverá a estar disponible para otros boosters.')) {
+      return;
+    }
+
+    try {
+      setUpdating(orderId);
+
+      const restOperation = put({
+        apiName: 'boosterAPI',
+        path: `/booster/release/${orderId}?groups=${encodeURIComponent(JSON.stringify(userGroups))}`,
+        options: {
+          body: { orderId }
+        }
+      });
+
+      const response = await restOperation.response;
+      const data = await response.body.json() as any;
+
+      console.log('✅ Order released:', data);
+      alert('Orden cedida exitosamente. Ahora está disponible para otros boosters.');
+
+      fetchMyOrders(userGroups);
+    } catch (err: any) {
+      console.error('❌ Error releasing order:', err);
+      alert('Error al ceder la orden: ' + (err.message || 'Unknown error'));
     } finally {
       setUpdating(null);
     }
@@ -348,6 +410,17 @@ const MyBoosterOrdersPage: React.FC = () => {
                         {updating === assignment.orderId ? 'Completando...' : 'Completar Orden'}
                       </button>
                     )}
+
+                    {(assignment.status === 'CLAIMED' || assignment.status === 'IN_PROGRESS') && (
+                      <button
+                        className="action-btn release-btn"
+                        onClick={() => releaseOrder(assignment.orderId)}
+                        disabled={updating === assignment.orderId}
+                      >
+                        <XCircle size={18} />
+                        {updating === assignment.orderId ? 'Cediendo...' : 'Ceder Orden'}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -355,7 +428,12 @@ const MyBoosterOrdersPage: React.FC = () => {
                 {assignment.status !== 'COMPLETED' && (
                   <div className="chat-section">
                     <h3>Chat con el Cliente</h3>
-                    <ChatBox orderId={assignment.orderId} />
+                    {console.log('💬 Booster Chat - clientUserId:', assignment.clientUserId, 'orderId:', assignment.orderId)}
+                    <ChatBox
+                      orderId={assignment.orderId}
+                      recipientUserId={assignment.clientUserId}
+                      recipientName="Cliente"
+                    />
                   </div>
                 )}
                 

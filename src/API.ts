@@ -85,6 +85,62 @@ export type DeleteMessageInput = {
   id: string,
 };
 
+export type CreateNotificationInput = {
+  id?: string | null,
+  userId: string,
+  type: string,
+  message: string,
+  orderId?: string | null,
+  isRead: boolean,
+  createdAt?: string | null,
+};
+
+export type ModelNotificationConditionInput = {
+  userId?: ModelStringInput | null,
+  type?: ModelStringInput | null,
+  message?: ModelStringInput | null,
+  orderId?: ModelStringInput | null,
+  isRead?: ModelBooleanInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelNotificationConditionInput | null > | null,
+  or?: Array< ModelNotificationConditionInput | null > | null,
+  not?: ModelNotificationConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
+export type Notification = {
+  __typename: "Notification",
+  id: string,
+  userId: string,
+  type: string,
+  message: string,
+  orderId?: string | null,
+  isRead: boolean,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type UpdateNotificationInput = {
+  id: string,
+  userId?: string | null,
+  type?: string | null,
+  message?: string | null,
+  orderId?: string | null,
+  isRead?: boolean | null,
+  createdAt?: string | null,
+};
+
+export type DeleteNotificationInput = {
+  id: string,
+};
+
 export type ModelMessageFilterInput = {
   id?: ModelIDInput | null,
   chatId?: ModelStringInput | null,
@@ -117,6 +173,26 @@ export type ModelIDInput = {
 export type ModelMessageConnection = {
   __typename: "ModelMessageConnection",
   items:  Array<Message | null >,
+  nextToken?: string | null,
+};
+
+export type ModelNotificationFilterInput = {
+  id?: ModelIDInput | null,
+  userId?: ModelStringInput | null,
+  type?: ModelStringInput | null,
+  message?: ModelStringInput | null,
+  orderId?: ModelStringInput | null,
+  isRead?: ModelBooleanInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelNotificationFilterInput | null > | null,
+  or?: Array< ModelNotificationFilterInput | null > | null,
+  not?: ModelNotificationFilterInput | null,
+};
+
+export type ModelNotificationConnection = {
+  __typename: "ModelNotificationConnection",
+  items:  Array<Notification | null >,
   nextToken?: string | null,
 };
 
@@ -178,6 +254,24 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
+export type ModelSubscriptionNotificationFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  userId?: ModelSubscriptionStringInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  message?: ModelSubscriptionStringInput | null,
+  orderId?: ModelSubscriptionStringInput | null,
+  isRead?: ModelSubscriptionBooleanInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionNotificationFilterInput | null > | null,
+  or?: Array< ModelSubscriptionNotificationFilterInput | null > | null,
+};
+
+export type ModelSubscriptionBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+};
+
 export type CreateMessageMutationVariables = {
   input: CreateMessageInput,
   condition?: ModelMessageConditionInput | null,
@@ -232,6 +326,63 @@ export type DeleteMessageMutation = {
   } | null,
 };
 
+export type CreateNotificationMutationVariables = {
+  input: CreateNotificationInput,
+  condition?: ModelNotificationConditionInput | null,
+};
+
+export type CreateNotificationMutation = {
+  createNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateNotificationMutationVariables = {
+  input: UpdateNotificationInput,
+  condition?: ModelNotificationConditionInput | null,
+};
+
+export type UpdateNotificationMutation = {
+  updateNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteNotificationMutationVariables = {
+  input: DeleteNotificationInput,
+  condition?: ModelNotificationConditionInput | null,
+};
+
+export type DeleteNotificationMutation = {
+  deleteNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type GetMessageQueryVariables = {
   id: string,
 };
@@ -272,6 +423,48 @@ export type ListMessagesQuery = {
   } | null,
 };
 
+export type GetNotificationQueryVariables = {
+  id: string,
+};
+
+export type GetNotificationQuery = {
+  getNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListNotificationsQueryVariables = {
+  filter?: ModelNotificationFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListNotificationsQuery = {
+  listNotifications?:  {
+    __typename: "ModelNotificationConnection",
+    items:  Array< {
+      __typename: "Notification",
+      id: string,
+      userId: string,
+      type: string,
+      message: string,
+      orderId?: string | null,
+      isRead: boolean,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type MessagesByChatQueryVariables = {
   chatId: string,
   createdAt?: ModelStringKeyConditionInput | null,
@@ -293,6 +486,33 @@ export type MessagesByChatQuery = {
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type NotificationsByUserQueryVariables = {
+  userId: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelNotificationFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type NotificationsByUserQuery = {
+  notificationsByUser?:  {
+    __typename: "ModelNotificationConnection",
+    items:  Array< {
+      __typename: "Notification",
+      id: string,
+      userId: string,
+      type: string,
+      message: string,
+      orderId?: string | null,
+      isRead: boolean,
+      createdAt: string,
+      updatedAt: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -346,5 +566,59 @@ export type OnDeleteMessageSubscription = {
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
+  } | null,
+};
+
+export type OnCreateNotificationSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationFilterInput | null,
+};
+
+export type OnCreateNotificationSubscription = {
+  onCreateNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateNotificationSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationFilterInput | null,
+};
+
+export type OnUpdateNotificationSubscription = {
+  onUpdateNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteNotificationSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationFilterInput | null,
+};
+
+export type OnDeleteNotificationSubscription = {
+  onDeleteNotification?:  {
+    __typename: "Notification",
+    id: string,
+    userId: string,
+    type: string,
+    message: string,
+    orderId?: string | null,
+    isRead: boolean,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };

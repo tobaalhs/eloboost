@@ -1,0 +1,22 @@
+{
+  "resourceName": "notificationsTable",
+  "tableName": "notifications",
+  "partitionKey": {
+    "fieldName": "notificationId",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "byUserId",
+      "partitionKey": {
+        "fieldName": "userId",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "createdAt",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

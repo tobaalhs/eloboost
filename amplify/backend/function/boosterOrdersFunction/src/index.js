@@ -10,8 +10,8 @@
 Amplify Params - DO NOT EDIT */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const crypto = require('crypto');
+const { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { sendGraphQLNotification, NotificationTypes } = require('./graphqlNotificationHelper');
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -34,26 +34,6 @@ const generateUUID = () => {
     const v = c === 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
-};
-
-// Función para desencriptar credenciales
-const decryptCredentials = (encryptedText, key) => {
-  if (!encryptedText || !key) return null;
-
-  try {
-    const parts = encryptedText.split(':');
-    if (parts.length !== 2) return null;
-
-    const iv = Buffer.from(parts[0], 'hex');
-    const encrypted = parts[1];
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key, 'hex'), iv);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
-  } catch (error) {
-    console.error('Error decrypting credentials:', error);
-    return null;
-  }
 };
 
 // Obtener el username del usuario autenticado
@@ -124,6 +104,8 @@ const isUserBoosterOrAdmin = async (event) => {
 // 1. Listar órdenes disponibles para boosters
 const listAvailableOrders = async () => {
   try {
+    console.log('🔍 Listing available orders from table:', ORDERS_TABLE);
+
     const params = {
       TableName: ORDERS_TABLE,
       FilterExpression: '#status = :paid AND attribute_not_exists(boosterUsername)',
@@ -137,19 +119,25 @@ const listAvailableOrders = async () => {
 
     const result = await docClient.send(new ScanCommand(params));
     let orders = result.Items || [];
-    
+
+    console.log('📊 Found orders with status=paid and no booster:', orders.length);
+
+    if (orders.length > 0) {
+      console.log('📋 Sample order:', JSON.stringify(orders[0], null, 2));
+    }
+
     // ✅ LÓGICA DE PRIORIDAD
     // Si existe al menos una orden prioritaria, mostrar SOLO las prioritarias
     // CORRECCIÓN: El campo en DynamoDB es "priorityBoost", no "isPriority"
     const hasPriorityOrders = orders.some(order => order.priorityBoost === true);
-    
+
     if (hasPriorityOrders) {
       console.log('🌟 Priority orders found - Filtering to show only priority orders');
       orders = orders.filter(order => order.priorityBoost === true);
     } else {
       console.log('📦 No priority orders - Showing all available orders');
     }
-    
+
     // Ordenar por fecha (las más recientes primero)
     orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -158,13 +146,13 @@ const listAvailableOrders = async () => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         orders,
         hasPriorityOrders // ✅ Info adicional para el frontend
       })
     };
   } catch (error) {
-    console.error('Error listing available orders:', error);
+    console.error('❌ Error listing available orders:', error);
     return {
       statusCode: 500,
       headers,
@@ -180,20 +168,49 @@ const claimOrder = async (orderId, boosterInfo, body) => {
     const orderResult = await docClient.send(new GetCommand(getOrderParams));
     const order = orderResult.Item;
 
-    if (!order) { 
-      return { 
-        statusCode: 404, 
-        headers, 
-        body: JSON.stringify({ message: 'Orden no encontrada' }) 
-      }; 
+    if (!order) {
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ message: 'Orden no encontrada' })
+      };
     }
-    
-    if (order.boosterUsername) { 
-      return { 
-        statusCode: 400, 
-        headers, 
-        body: JSON.stringify({ message: 'Esta orden ya fue tomada por otro booster' }) 
-      }; 
+
+    if (order.boosterUsername) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ message: 'Esta orden ya fue tomada por otro booster' })
+      };
+    }
+
+    // ✅ VERIFICAR: El booster no debe tener otra orden activa
+    const boosterUsernameToCheck = body.boosterUsername || boosterInfo.username;
+    const checkActiveOrdersParams = {
+      TableName: ASSIGNMENTS_TABLE,
+      FilterExpression: 'boosterUsername = :username AND (#status = :claimed OR #status = :inProgress)',
+      ExpressionAttributeNames: {
+        '#status': 'status'
+      },
+      ExpressionAttributeValues: {
+        ':username': boosterUsernameToCheck,
+        ':claimed': 'CLAIMED',
+        ':inProgress': 'IN_PROGRESS'
+      }
+    };
+
+    const activeAssignments = await docClient.send(new ScanCommand(checkActiveOrdersParams));
+
+    if (activeAssignments.Items && activeAssignments.Items.length > 0) {
+      console.log('⚠️ Booster already has active order:', activeAssignments.Items[0]);
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          message: 'Ya tienes una orden activa. Complétala antes de tomar otra.',
+          activeOrderId: activeAssignments.Items[0].orderId
+        })
+      };
     }
 
     const boosterEarnings = (parseFloat(order.priceUSD) * BOOSTER_COMMISSION_RATE).toFixed(2);
@@ -214,24 +231,25 @@ const claimOrder = async (orderId, boosterInfo, body) => {
     const assignmentParams = {
       TableName: ASSIGNMENTS_TABLE,
       Item: {
-        assignmentId, 
+        assignmentId,
         orderId,
         boosterUsername: boosterUsernameToSave,
         boosterEmail: boosterInfo.email || '',
         boosterDisplayName: boosterDisplayNameToSave,
-        status: 'CLAIMED', 
-        createdAt: now, 
-        claimedAt: now, 
+        clientUserId: order.userId, // ✅ Agregar userId del cliente para notificaciones de chat
+        status: 'CLAIMED',
+        createdAt: now,
+        claimedAt: now,
         updatedAt: now,
         boosterEarnings: parseFloat(boosterEarnings),
         boosterEarningsCLP: parseFloat(boosterEarningsCLP),
-        isPaid: false, 
+        isPaid: false,
         isPriority: order.isPriority || false,
-        orderSubject: order.subject, 
-        fromRank: order.fromRank, 
+        orderSubject: order.subject,
+        fromRank: order.fromRank,
         toRank: order.toRank,
-        server: order.server, 
-        nickname: order.nickname, 
+        server: order.server,
+        nickname: order.nickname,
         ttl: order.ttl
       }
     };
@@ -254,13 +272,25 @@ const claimOrder = async (orderId, boosterInfo, body) => {
 
     console.log('✅ Order claimed:', orderId, 'by', boosterUsernameToSave);
 
+    // 🔔 Enviar notificación al cliente EN TIEMPO REAL
+    try {
+      await sendGraphQLNotification(
+        order.userId,
+        NotificationTypes.BOOSTER_ASSIGNED,
+        `Tu boost ha sido asignado a ${boosterDisplayNameToSave}`,
+        orderId
+      );
+    } catch (notifError) {
+      console.error('Error sending notification:', notifError);
+    }
+
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ 
-        message: 'Orden tomada exitosamente', 
-        assignmentId, 
-        boosterEarnings: parseFloat(boosterEarnings) 
+      body: JSON.stringify({
+        message: 'Orden tomada exitosamente',
+        assignmentId,
+        boosterEarnings: parseFloat(boosterEarnings)
       })
     };
   } catch (error) {
@@ -277,7 +307,7 @@ const claimOrder = async (orderId, boosterInfo, body) => {
 const getMyOrders = async (boosterUsername) => {
   try {
     console.log('🔍 Querying assignments for username:', boosterUsername);
-
+    
     const params = {
       TableName: ASSIGNMENTS_TABLE,
       IndexName: 'boosterUsername-index',
@@ -288,67 +318,13 @@ const getMyOrders = async (boosterUsername) => {
     };
 
     const result = await docClient.send(new QueryCommand(params));
-    const assignments = result.Items || [];
 
-    console.log('📦 My orders for', boosterUsername, ':', assignments.length);
-
-    // Obtener detalles completos de cada orden incluyendo credenciales
-    const ordersWithDetails = await Promise.all(
-      assignments.map(async (assignment) => {
-        try {
-          const orderParams = {
-            TableName: ORDERS_TABLE,
-            Key: { orderId: assignment.orderId }
-          };
-
-          const orderResult = await docClient.send(new GetCommand(orderParams));
-          const order = orderResult.Item;
-
-          if (!order) {
-            console.log('⚠️ Order not found:', assignment.orderId);
-            return assignment;
-          }
-
-          // Desencriptar credenciales si existen
-          let credentials = null;
-          if (order.gameUsername && order.gamePassword && order.encryptionKey) {
-            const decryptedUsername = decryptCredentials(order.gameUsername, order.encryptionKey);
-            const decryptedPassword = decryptCredentials(order.gamePassword, order.encryptionKey);
-
-            if (decryptedUsername && decryptedPassword) {
-              credentials = {
-                username: decryptedUsername,
-                password: decryptedPassword
-              };
-              console.log('🔓 Credentials decrypted for order:', assignment.orderId);
-            }
-          }
-
-          return {
-            ...assignment,
-            credentials,
-            orderDetails: {
-              subject: order.subject,
-              fromRank: order.fromRank,
-              toRank: order.toRank,
-              server: order.server,
-              nickname: order.nickname,
-              status: order.status,
-              boosterStatus: order.boosterStatus,
-              createdAt: order.createdAt
-            }
-          };
-        } catch (error) {
-          console.error('Error fetching order details for', assignment.orderId, error);
-          return assignment;
-        }
-      })
-    );
+    console.log('📦 My orders for', boosterUsername, ':', result.Items?.length || 0);
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ orders: ordersWithDetails })
+      body: JSON.stringify({ orders: result.Items || [] })
     };
   } catch (error) {
     console.error('Error getting my orders:', error);
@@ -476,6 +452,34 @@ const updateOrderStatus = async (orderId, status, boosterUsername) => {
 
     console.log('✅ Order status updated:', orderId, status);
 
+    // 🔔 Enviar notificaciones EN TIEMPO REAL según el estado
+    try {
+      // Obtener la orden completa para el userId
+      const getOrderParams = { TableName: ORDERS_TABLE, Key: { orderId } };
+      const orderResult = await docClient.send(new GetCommand(getOrderParams));
+      const order = orderResult.Item;
+
+      if (order && order.userId) {
+        if (status === 'IN_PROGRESS') {
+          await sendGraphQLNotification(
+            order.userId,
+            NotificationTypes.BOOST_STARTED,
+            `Tu boost ha comenzado`,
+            orderId
+          );
+        } else if (status === 'COMPLETED') {
+          await sendGraphQLNotification(
+            order.userId,
+            NotificationTypes.BOOST_COMPLETED,
+            `¡Tu boost ha sido completado!`,
+            orderId
+          );
+        }
+      }
+    } catch (notifError) {
+      console.error('Error sending notification:', notifError);
+    }
+
     return {
       statusCode: 200,
       headers,
@@ -533,6 +537,99 @@ const getEarnings = async (boosterUsername) => {
       statusCode: 500,
       headers,
       body: JSON.stringify({ message: 'Error al obtener ganancias', error: error.message })
+    };
+  }
+};
+
+// 6. Ceder/Liberar orden (release order)
+const releaseOrder = async (orderId, boosterUsername) => {
+  try {
+    console.log('🔓 Releasing order:', { orderId, boosterUsername });
+
+    // 1. Verificar que existe una asignación para este booster y orden
+    const queryAssignmentParams = {
+      TableName: ASSIGNMENTS_TABLE,
+      IndexName: 'boosterUsername-index',
+      KeyConditionExpression: 'boosterUsername = :boosterUsername',
+      FilterExpression: 'orderId = :orderId AND #status IN (:claimed, :inProgress)',
+      ExpressionAttributeNames: {
+        '#status': 'status'
+      },
+      ExpressionAttributeValues: {
+        ':boosterUsername': boosterUsername,
+        ':orderId': orderId,
+        ':claimed': 'CLAIMED',
+        ':inProgress': 'IN_PROGRESS'
+      }
+    };
+
+    const assignmentResult = await docClient.send(new QueryCommand(queryAssignmentParams));
+
+    if (!assignmentResult.Items || assignmentResult.Items.length === 0) {
+      console.log('❌ No assignment found for this booster and order');
+      return {
+        statusCode: 404,
+        headers,
+        body: JSON.stringify({ message: 'No se encontró una asignación activa para esta orden' })
+      };
+    }
+
+    const assignment = assignmentResult.Items[0];
+
+    // 2. Eliminar la asignación de la tabla BoosterAssignments
+    const deleteAssignmentParams = {
+      TableName: ASSIGNMENTS_TABLE,
+      Key: { assignmentId: assignment.assignmentId }
+    };
+
+    await docClient.send(new DeleteCommand(deleteAssignmentParams));
+    console.log('✅ Assignment deleted:', assignment.assignmentId);
+
+    // 3. Actualizar la orden para eliminar info del booster y volver a estado disponible
+    const updateOrderParams = {
+      TableName: ORDERS_TABLE,
+      Key: { orderId },
+      UpdateExpression: 'REMOVE boosterUsername, boosterDisplayName, boosterAssignedAt, boosterStatus, boosterStartedAt, boosterCompletedAt SET updatedAt = :now',
+      ExpressionAttributeValues: {
+        ':now': new Date().toISOString()
+      }
+    };
+
+    await docClient.send(new UpdateCommand(updateOrderParams));
+    console.log('✅ Order released and marked as available');
+
+    // 4. Obtener la orden completa para notificar a todos los boosters
+    const getOrderParams = { TableName: ORDERS_TABLE, Key: { orderId } };
+    const orderResult = await docClient.send(new GetCommand(getOrderParams));
+    const order = orderResult.Item;
+
+    // 5. Notificar a todos los boosters que hay una nueva orden disponible
+    // Obtener todos los usuarios booster (necesitaremos una query o scan)
+    // Por ahora, simplemente logueamos que la orden fue liberada
+    console.log('📢 Order released, available for all boosters:', {
+      orderId,
+      subject: order?.subject,
+      price: order?.price
+    });
+
+    // TODO: Enviar notificación a todos los boosters sobre nueva orden disponible
+    // Esto requeriría obtener lista de boosters de Cognito o tener una tabla de usuarios
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        message: 'Orden cedida exitosamente',
+        orderId,
+        releasedBy: boosterUsername
+      })
+    };
+  } catch (error) {
+    console.error('Error releasing order:', error);
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ message: 'Error al ceder la orden', error: error.message })
     };
   }
 };
@@ -611,6 +708,15 @@ exports.handler = async (event) => {
     // GET /booster/earnings - Ver ganancias
     if (method === 'GET' && path.includes('/earnings')) {
       return await getEarnings(userInfo.username);
+    }
+
+    // PUT /booster/release/{orderId} - Ceder/Liberar orden
+    if (method === 'PUT' && path.includes('/release')) {
+      const orderId = event.pathParameters?.orderId || body.orderId;
+
+      console.log('🔓 Release request:', { orderId, username: userInfo.username });
+
+      return await releaseOrder(orderId, userInfo.username);
     }
 
     return {

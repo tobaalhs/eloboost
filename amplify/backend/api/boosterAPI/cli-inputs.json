@@ -44,6 +44,19 @@
           "delete"
         ]
       }
+    },
+    "/booster/release/{orderId}": {
+      "name": "/booster/release/{orderId}",
+      "lambdaFunction": "boosterOrdersFunction",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
     }
   }
 }

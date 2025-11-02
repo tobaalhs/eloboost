@@ -27,6 +27,18 @@
     "storageordersStreamArn": {
       "Type": "String",
       "Default": "storageordersStreamArn"
+    },
+    "autheloboostde5c54efUserPoolId": {
+      "Type": "String",
+      "Default": "autheloboostde5c54efUserPoolId"
+    },
+    "apieloboostGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIEndpointOutput"
+    },
+    "apieloboostGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -90,6 +102,15 @@
             },
             "STORAGE_ORDERS_STREAMARN": {
               "Ref": "storageordersStreamArn"
+            },
+            "AUTH_ELOBOOSTDAAC5EE3_USERPOOLID": {
+              "Ref": "autheloboostde5c54efUserPoolId"
+            },
+            "API_ELOBOOST_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIEndpointOutput"
+            },
+            "API_ELOBOOST_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIKeyOutput"
             }
           }
         },
@@ -231,6 +252,30 @@
                   ]
                 }
               ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Query"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/notifications-${env}"
+                },
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/notifications-${env}/index/*"
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:ListUsersInGroup",
+                "cognito-idp:AdminListGroupsForUser"
+              ],
+              "Resource": "*"
             }
           ]
         }

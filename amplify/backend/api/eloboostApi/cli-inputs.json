@@ -54,6 +54,17 @@
           "read"
         ]
       }
+    },
+    "/order/{orderId}/credentials": {
+      "name": "/order/{orderId}/credentials",
+      "lambdaFunction": "getOrderDetail",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read",
+          "update"
+        ]
+      }
     }
   }
 }

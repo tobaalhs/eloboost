@@ -18,12 +18,20 @@ const sign = (params) => {
 };
 
 exports.handler = async (event) => {
-  console.log(`EVENTO createPaymentLink v2: ${JSON.stringify(event)}`);
+  console.log(`EVENTO createPaymentLink v3: ${JSON.stringify(event)}`);
   try {
     const boostData = JSON.parse(event.body);
-    const { amount, subject, email } = boostData;
+    const { amount, subject, email, userId: userIdFromBody } = boostData;
     const orderId = `eloboost-${Date.now()}`;
-    const userId = event.requestContext.identity.cognitoIdentityId;
+
+    // PRIORIZAR el userId que viene del body (enviado desde el frontend)
+    // Si no está disponible, usar el del contexto como fallback
+    const userId = userIdFromBody || event.requestContext.authorizer?.claims?.sub || event.requestContext.identity.cognitoIdentityId;
+
+    console.log('📝 Creating order with userId (sub):', userId);
+    console.log('   - From body:', userIdFromBody);
+    console.log('   - From context:', event.requestContext.authorizer?.claims?.sub);
+
     const tableName = process.env.STORAGE_ORDERS_NAME;
 
     if (boostData.selectedChampions && Array.isArray(boostData.selectedChampions)) {
@@ -44,9 +52,14 @@ exports.handler = async (event) => {
         ttl: Math.floor(Date.now() / 1000) + 86400 // 86400 segundos = 24 horas
       }
     };
-    
-    // Se elimina el email para no guardarlo en la base de datos, lo cual es una buena práctica.
-    delete newOrder.Item.email; 
+
+    // Se eliminan campos que no deben guardarse en la base de datos
+    delete newOrder.Item.email;
+    // No guardar el userId duplicado si venía en boostData
+    if (newOrder.Item.userId !== userId) {
+      delete newOrder.Item.userId;
+      newOrder.Item.userId = userId;
+    } 
     
     await docClient.send(new PutCommand(newOrder));
 

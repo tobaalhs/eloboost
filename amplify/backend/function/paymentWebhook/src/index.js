@@ -9,11 +9,13 @@ Amplify Params - DO NOT EDIT */
 const crypto = require('crypto');
 const axios = require('axios');
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-// --- CAMBIO 1: Importamos GetCommand y UpdateCommand ---
 const { DynamoDBDocumentClient, GetCommand, UpdateCommand } = require("@aws-sdk/lib-dynamodb");
+const { CognitoIdentityProviderClient, ListUsersInGroupCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { sendGraphQLNotification, NotificationTypes } = require('./graphqlNotificationHelper');
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const cognitoClient = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
 
 const API_KEY = '28F7B783-FFC3-4D02-81F9-28L5D78CC6A4'; 
 const SECRET_KEY = 'a6eeed41e6551fc4890555b8d80f70fee55db044';
@@ -85,6 +87,46 @@ exports.handler = async (event) => {
       console.log(`Actualizando orden ${orderId} a estado 'paid'`);
       await docClient.send(new UpdateCommand(updateParams));
       console.log("Orden actualizada con éxito.");
+
+      // 🔔 Notificar a los boosters que hay una nueva orden disponible
+      try {
+        // WORKAROUND: Amplify no está pasando correctamente el UserPoolId, usar valor hardcodeado
+        const userPoolId = process.env.AUTH_ELOBOOSTDAAC5EE3_USERPOOLID === 'autheloboostde5c54efUserPoolId'
+          ? 'us-east-1_Cm7jth6AT'
+          : process.env.AUTH_ELOBOOSTDAAC5EE3_USERPOOLID;
+
+        console.log('🔍 UserPoolId detectado:', userPoolId);
+
+        if (userPoolId && userPoolId !== 'autheloboostde5c54efUserPoolId') {
+          const listUsersCommand = new ListUsersInGroupCommand({
+            UserPoolId: userPoolId,
+            GroupName: 'booster'
+          });
+
+          const boostersResponse = await cognitoClient.send(listUsersCommand);
+          const boosters = boostersResponse.Users || [];
+
+          console.log(`🔔 Notificando a ${boosters.length} boosters sobre nueva orden`);
+
+          // Enviar notificación EN TIEMPO REAL a cada booster
+          const notificationPromises = boosters.map(booster => {
+            const userSub = booster.Attributes?.find(attr => attr.Name === 'sub')?.Value;
+            if (userSub) {
+              return sendGraphQLNotification(
+                userSub,
+                NotificationTypes.NEW_BOOST_AVAILABLE,
+                `Nuevo boost disponible: ${Item.subject || 'Boost'}`,
+                orderId
+              );
+            }
+          });
+
+          await Promise.allSettled(notificationPromises);
+        }
+      } catch (notifError) {
+        console.error('Error notificando a boosters:', notifError);
+        // No lanzamos el error para no afectar el flujo principal
+      }
 
     } else {
       console.log(`Estado del pago no es 'pagado' (status: ${status}). No se actualiza la base de datos.`);

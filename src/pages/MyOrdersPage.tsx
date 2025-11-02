@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // <-- CAMBIO IMPORTANTE
 import { get } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { useTranslation } from 'react-i18next';
 import './MyOrdersPage.css';
 
@@ -20,11 +21,22 @@ const MyOrdersPage: React.FC = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        // Obtener el userId (sub) del token JWT
+        const session = await fetchAuthSession();
+        const userId = session.tokens?.idToken?.payload?.sub as string;
+
+        console.log('📋 Fetching orders for userId (sub):', userId);
+
         const response = await get({
           apiName: 'eloboostApi',
-          path: '/my-orders'
+          path: '/my-orders',
+          options: {
+            queryParams: {
+              userId: userId
+            }
+          }
         }).response;
-        
+
         const data = await response.body.json() as Order[];
         data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setOrders(data);

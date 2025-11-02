@@ -1,0 +1,4 @@
+{
+  "runtimes": ["nodejs18.x"],
+  "description": "Shared notification helper for all Lambda functions"
+}

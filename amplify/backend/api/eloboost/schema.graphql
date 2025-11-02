@@ -1,14 +1,30 @@
-type Message 
-  @model 
+type Message
+  @model
   @auth(rules: [
     { allow: private, operations: [create, read] },
     { allow: owner, operations: [update, delete] }
-  ]) 
+  ])
 {
   id: ID!
   # Agregar sortDirection: ["createdAt"] para ordenar por fecha
   chatId: String! @index(name: "byChat", sortKeyFields: ["createdAt"], queryField: "messagesByChat")
   content: String!
   sender: String!
+  createdAt: AWSDateTime!
+}
+
+type Notification
+  @model
+  @auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: public, provider: apiKey, operations: [create] }
+  ])
+{
+  id: ID!
+  userId: String! @index(name: "byUser", sortKeyFields: ["createdAt"], queryField: "notificationsByUser")
+  type: String!
+  message: String!
+  orderId: String
+  isRead: Boolean!
   createdAt: AWSDateTime!
 }

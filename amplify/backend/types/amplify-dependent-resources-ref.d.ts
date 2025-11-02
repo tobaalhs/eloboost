@@ -17,9 +17,15 @@ export type AmplifyDependentResourcesAttributes = {
     },
     "eloboost": {
       "GraphQLAPIEndpointOutput": "string",
-      "GraphQLAPIIdOutput": "string"
+      "GraphQLAPIIdOutput": "string",
+      "GraphQLAPIKeyOutput": "string"
     },
     "eloboostApi": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
+    "notificationsAPI": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
@@ -107,6 +113,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
+    "notificationsFunction": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "paymentWebhook": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
@@ -131,6 +144,14 @@ export type AmplifyDependentResourcesAttributes = {
   },
   "storage": {
     "BoosterAssignments": {
+      "Arn": "string",
+      "Name": "string",
+      "PartitionKeyName": "string",
+      "PartitionKeyType": "string",
+      "Region": "string",
+      "StreamArn": "string"
+    },
+    "notificationsTable": {
       "Arn": "string",
       "Name": "string",
       "PartitionKeyName": "string",

@@ -128,6 +128,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "notificationsAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "notificationsFunction"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "userManagementAPI": {
       "dependsOn": [
         {
@@ -236,6 +250,14 @@
           ],
           "category": "storage",
           "resourceName": "BoosterAssignments"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ],
+          "category": "api",
+          "resourceName": "eloboost"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -284,6 +306,14 @@
           ],
           "category": "storage",
           "resourceName": "orders"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ],
+          "category": "api",
+          "resourceName": "eloboost"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -333,6 +363,22 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "notificationsFunction": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "notificationsTable"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "paymentWebhook": {
       "build": true,
       "dependsOn": [
@@ -344,6 +390,21 @@
           ],
           "category": "storage",
           "resourceName": "orders"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "eloboostde5c54ef"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ],
+          "category": "api",
+          "resourceName": "eloboost"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -523,6 +584,22 @@
         }
       ]
     },
+    "AMPLIFY_function_notificationsFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "notificationsFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_notificationsFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "notificationsFunction"
+        }
+      ]
+    },
     "AMPLIFY_function_paymentWebhook_deploymentBucketName": {
       "usedBy": [
         {
@@ -574,6 +651,10 @@
   },
   "storage": {
     "BoosterAssignments": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "notificationsTable": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     },

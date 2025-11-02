@@ -8,7 +8,20 @@
       "Bash(cat:*)",
       "Bash(npm start)",
       "Bash(aws dynamodb get-item:*)",
-      "Bash(aws lambda update-function-code:*)"
+      "Bash(aws lambda update-function-code:*)",
+      "Bash(tree:*)",
+      "Bash(node -c:*)",
+      "Bash(amplify status:*)",
+      "Bash(aws logs tail:*)",
+      "Bash(amplify codegen:*)",
+      "Bash(aws lambda get-function-configuration:*)",
+      "Bash(find:*)",
+      "Bash(amplify update function:*)",
+      "Bash(aws appsync list-graphql-apis:*)",
+      "Bash(aws dynamodb scan:*)",
+      "Bash(aws cognito-idp admin-list-groups-for-user:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(amplify function logs:*)"
     ],
     "deny": [],
     "ask": []

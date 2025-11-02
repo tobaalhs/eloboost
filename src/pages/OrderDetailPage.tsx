@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { get, post } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import './OrderDetailPage.css';
@@ -97,16 +98,27 @@ const OrderDetailPage: React.FC = () => {
         setErrorMessage('ID de orden no válido.');
         return;
       }
-      
+
       setStatus('loading');
       setOrder(null);
-      
+
       try {
+        // Obtener el userId (sub) del token JWT
+        const session = await fetchAuthSession();
+        const userId = session.tokens?.idToken?.payload?.sub as string;
+
+        console.log('📋 Fetching order detail for userId (sub):', userId);
+
         const restOperation = get({
           apiName: 'eloboostApi',
-          path: `/order/${orderId}`
+          path: `/order/${orderId}`,
+          options: {
+            queryParams: {
+              userId: userId
+            }
+          }
         });
-        
+
         const { body } = await restOperation.response;
         const data: unknown = await body.json();
 
@@ -132,7 +144,45 @@ const OrderDetailPage: React.FC = () => {
   }, [orderId, t]);
 
   const handleCancelOrder = async () => {
-    // Sin cambios en esta función
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, cancelar orden',
+      cancelButtonText: 'No, mantener orden'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await post({
+          apiName: 'eloboostApi',
+          path: '/cancel-order',
+          options: {
+            body: { orderId }
+          }
+        }).response;
+
+        await Swal.fire({
+          title: 'Orden cancelada',
+          text: 'Tu orden ha sido cancelada exitosamente',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        });
+
+        navigate('/my-orders');
+      } catch (error: any) {
+        console.error('Error al cancelar la orden:', error);
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'No se pudo cancelar la orden',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        });
+      }
+    }
   };
 
   if (status === 'loading') {
@@ -155,9 +205,18 @@ const OrderDetailPage: React.FC = () => {
       if (!orderId) return;
 
       try {
+        // Obtener el userId (sub) del token JWT
+        const session = await fetchAuthSession();
+        const userId = session.tokens?.idToken?.payload?.sub as string;
+
         const restOperation = get({
           apiName: 'eloboostApi',
-          path: `/order/${orderId}`
+          path: `/order/${orderId}`,
+          options: {
+            queryParams: {
+              userId: userId
+            }
+          }
         });
 
         const { body } = await restOperation.response;
@@ -287,7 +346,12 @@ const OrderDetailPage: React.FC = () => {
           {showChat && (
             <div className="detail-card chat-container">
               <h2>Chat con tu Booster</h2>
-              <ChatBox orderId={order.orderId} />
+              {console.log('💬 Cliente Chat - boosterUsername (recipientUserId):', order.boosterUsername, 'orderId:', order.orderId)}
+              <ChatBox
+                orderId={order.orderId}
+                recipientUserId={order.boosterUsername}
+                recipientName={order.boosterDisplayName || order.boosterUsername}
+              />
             </div>
           )}
 

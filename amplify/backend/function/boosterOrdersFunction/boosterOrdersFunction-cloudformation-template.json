@@ -42,6 +42,14 @@
     },
     "boosterCommissionRate": {
       "Type": "String"
+    },
+    "apieloboostGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIEndpointOutput"
+    },
+    "apieloboostGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apieloboostGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -117,6 +125,12 @@
             },
             "BOOSTER_COMMISSION_RATE": {
               "Ref": "boosterCommissionRate"
+            },
+            "API_ELOBOOST_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIEndpointOutput"
+            },
+            "API_ELOBOOST_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apieloboostGraphQLAPIKeyOutput"
             }
           }
         },
@@ -299,6 +313,22 @@
                       "index/*"
                     ]
                   ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Query"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/notifications-${env}"
+                },
+                {
+                  "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/notifications-${env}/index/*"
                 }
               ]
             }

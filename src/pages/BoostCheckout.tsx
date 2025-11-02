@@ -6,7 +6,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useTranslation } from 'react-i18next';
 import './BoostCheckout.css'; // Importamos los estilos
 import { post } from 'aws-amplify/api';
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import { fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
 
 // Definimos una interfaz para los datos del boost para que TypeScript sepa qué esperar
 interface BoostData {
@@ -70,9 +70,9 @@ const handleProceedToPayment = async () => {
 
   setIsProcessing(true);
   setError(null);
-  
+
   console.log("Iniciando proceso de pago...");
-  
+
   try {
     const userAttributes = await fetchUserAttributes();
     const userEmail = userAttributes.email;
@@ -81,11 +81,22 @@ const handleProceedToPayment = async () => {
       throw new Error("No se pudo obtener el email del usuario.");
     }
 
+    // Obtener el userId (sub) del token JWT
+    const session = await fetchAuthSession();
+    const userId = session.tokens?.idToken?.payload?.sub as string;
+
+    if (!userId) {
+      throw new Error("No se pudo obtener el ID del usuario.");
+    }
+
+    console.log("📝 User ID (sub) para la orden:", userId);
+
     const requestBody = {
       amount: parseInt(boostData.priceCLP.replace(/\D/g, '')),
       subject: `Eloboost de ${boostData.fromRank} a ${boostData.toRank}`,
       ...boostData,
-      email: userEmail
+      email: userEmail,
+      userId: userId  // Enviar el userId explícitamente
     };
 
     console.log("Enviando al backend:", requestBody);

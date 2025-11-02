@@ -56,17 +56,10 @@ const CustomerCredentialsForm: React.FC<CustomerCredentialsFormProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Obtener el token de autenticación
-      const session = await fetchAuthSession();
-      const token = session.tokens?.idToken?.toString();
-
       const restOperation = put({
         apiName: 'eloboostApi',
         path: `/order/${orderId}/credentials`,
         options: {
-          headers: {
-            Authorization: token || ''
-          },
           body: {
             gameUsername,
             gamePassword,

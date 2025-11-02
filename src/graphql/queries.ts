@@ -48,6 +48,48 @@ export const listMessages = /* GraphQL */ `query ListMessages(
   APITypes.ListMessagesQueryVariables,
   APITypes.ListMessagesQuery
 >;
+export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
+  getNotification(id: $id) {
+    id
+    userId
+    type
+    message
+    orderId
+    isRead
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetNotificationQueryVariables,
+  APITypes.GetNotificationQuery
+>;
+export const listNotifications = /* GraphQL */ `query ListNotifications(
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listNotifications(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      userId
+      type
+      message
+      orderId
+      isRead
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListNotificationsQueryVariables,
+  APITypes.ListNotificationsQuery
+>;
 export const messagesByChat = /* GraphQL */ `query MessagesByChat(
   $chatId: String!
   $createdAt: ModelStringKeyConditionInput
@@ -81,4 +123,39 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
 ` as GeneratedQuery<
   APITypes.MessagesByChatQueryVariables,
   APITypes.MessagesByChatQuery
+>;
+export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
+  $userId: String!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  notificationsByUser(
+    userId: $userId
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userId
+      type
+      message
+      orderId
+      isRead
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.NotificationsByUserQueryVariables,
+  APITypes.NotificationsByUserQuery
 >;
